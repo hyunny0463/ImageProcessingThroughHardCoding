@@ -559,9 +559,80 @@ void CAlgorithm::OCVColorExtraction(void)
 	cvReleaseImage(&pReProcess2Img);
 }
 
-void CAlgorithm::HCVCalibration(void)
+void CAlgorithm::ImgCalibration(void)
 {
+	//Original Image Load & Show
+	CvvImage cvOriginalImg;
+	IplImage *pOriginalImg;
+	pOriginalImg = cvLoadImage("OriginalImg3.jpg");
+	IplImage *pReOriginalImg = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3);
 
+	cvResize(pOriginalImg, pReOriginalImg);
+
+	cvOriginalImg.CopyOf(pReOriginalImg, pReOriginalImg->nChannels / 3);
+	cvOriginalImg.Show(m_pOriginalDC->m_hDC, 0, 0, cvOriginalImg.Width(), cvOriginalImg.Height());
+
+	cvReleaseImage(&pReOriginalImg);
+
+	//Calibration
+	CvvImage cvProcess1Img, cvProcess2Img;
+	IplImage *pProcess1Img = cvCreateImage(cvSize(1280, 1280), IPL_DEPTH_8U, 3);
+	IplImage *pReProcess1Img = cvCreateImage(cvSize(290, 290), IPL_DEPTH_8U, 3);
+	int nWidth = 1280;  // +140
+	int nHeight = 1280; // +140
+
+	//Circle Calibration
+	int nFocalLength = 445; // 초점거리(F)
+
+	for (int nCalibrationY = 0; nCalibrationY < nWidth; nCalibrationY++)
+	{
+		for (int nCalibrationX = 0; nCalibrationX < nHeight; nCalibrationX++)
+		{
+			int x = abs(nCalibrationX - nWidth / 2);
+			int y = abs(nCalibrationY - nHeight / 2);
+			double dblLength = sqrt((double)(x*x + y*y + nFocalLength*nFocalLength));
+
+			int nTargetY, nTargetX;
+
+			if (nCalibrationX < nWidth / 2 && nCalibrationY < nHeight / 2) // 1사분면의 매핑
+			{
+				nTargetX = pOriginalImg->width / 2 - x * nFocalLength / dblLength;
+				nTargetY = pOriginalImg->height / 2 - y * nFocalLength / dblLength;
+			}
+
+			else if (nCalibrationX < nWidth / 2 && nCalibrationY >= nHeight / 2) // 2사분면의 매핑
+			{
+				nTargetX = pOriginalImg->width / 2 - x * nFocalLength / dblLength;
+				nTargetY = pOriginalImg->height / 2 + y * nFocalLength / dblLength;
+			}
+
+			else if (nCalibrationX >= nWidth / 2 && nCalibrationY < nHeight / 2) // 3사분면의 매핑
+			{
+				nTargetX = pOriginalImg->width / 2 + x * nFocalLength / dblLength;
+				nTargetY = pOriginalImg->height / 2 - y * nFocalLength / dblLength;
+			}
+
+			else if (nCalibrationX >= nWidth / 2 && nCalibrationY >= nHeight / 2) // 4사분면의 매핑
+			{
+				nTargetX = pOriginalImg->width / 2 + x * nFocalLength / dblLength;
+				nTargetY = pOriginalImg->height / 2 + y * nFocalLength / dblLength;
+			}
+
+			// 매핑한 좌표를 이요하여 데이터 복사 ( 컬러 이미지 )
+			pProcess1Img->imageData[nCalibrationY * 1280 * 3 + nCalibrationX * 3 + 0] = pOriginalImg->imageData[nTargetY * 1280 * 3 + nTargetX * 3 + 0];
+			pProcess1Img->imageData[nCalibrationY * 1280 * 3 + nCalibrationX * 3 + 1] = pOriginalImg->imageData[nTargetY * 1280 * 3 + nTargetX * 3 + 1];
+			pProcess1Img->imageData[nCalibrationY * 1280 * 3 + nCalibrationX * 3 + 2] = pOriginalImg->imageData[nTargetY * 1280 * 3 + nTargetX * 3 + 2];
+		}
+	}
+
+	cvResize(pProcess1Img, pReProcess1Img, CV_INTER_LINEAR);
+
+	// 왜곡 보정 영상
+	cvProcess1Img.CopyOf(pReProcess1Img, pReProcess1Img->nChannels / 3);
+	cvProcess1Img.Show(m_pProcess1DC->m_hDC, 0, 0, cvProcess1Img.Width(), cvProcess1Img.Height());
+	cvProcess1Img.Destroy();
+
+	cvReleaseImage(&pReProcess1Img);
 }
 
 void CAlgorithm::OCVResize(void)

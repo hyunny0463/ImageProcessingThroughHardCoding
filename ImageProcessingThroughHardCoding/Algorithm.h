@@ -33,8 +33,9 @@ public:
 	void HCVThreshold(void);
 	void HCVSplitImage(void);
 	void HCVHistogram(void);
-	void HCVCalibration(void);
 	void HCVResize(void);
+
+	void ImgCalibration(void);
 
 	double round(double num);
 	
