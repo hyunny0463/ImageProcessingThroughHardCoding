@@ -480,6 +480,7 @@ void CAlgorithm::HCVHistogram(void)
 
 void CAlgorithm::OCVColorExtraction(void)
 {
+	//Original Image Load & Show
 	CvvImage cvOriginalImg;
 	IplImage *pOriginalImg;
 	pOriginalImg = cvLoadImage("OriginalImg2.jpg");
@@ -488,44 +489,44 @@ void CAlgorithm::OCVColorExtraction(void)
 	cvResize(pOriginalImg, pReOriginalImg);
 
 	cvOriginalImg.CopyOf(pReOriginalImg, pReOriginalImg->nChannels / 3);
-	cvOriginalImg.Show( m_pOriginalDC->m_hDC, 0, 0, cvOriginalImg.Width(), cvOriginalImg.Height());
+	cvOriginalImg.Show(m_pOriginalDC->m_hDC, 0, 0, cvOriginalImg.Width(), cvOriginalImg.Height());
 	cvOriginalImg.Destroy();
 
 	cvReleaseImage(&pReOriginalImg);
 
-	// Color Extraction Part
+	//Color Extraction Part
 	CvvImage cvProcess1Img, cvProcess2Img, cvProcess3Img;
 	IplImage *pReProcess1Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3);
-	IplImage *pReProcess2Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3);
-	IplImage *pRedImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 3);
-	IplImage *pGreenImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 3);
-	IplImage *pBlueImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 3);
-	IplImage *pHistoImg = cvCreateImage(cvSize(256, 128), IPL_DEPTH_8U, 3);
-	IplImage *pCombineHistoImg = cvCreateImage(cvSize(256*2, 128*2), IPL_DEPTH_8U, 3);
+	IplImage *pReProcess2Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1);
+	IplImage *pRedImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1);
+	IplImage *pGreenImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1);
+	IplImage *pBlueImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1);
+	IplImage *pHistoImg = cvCreateImage(cvSize(256, 128), IPL_DEPTH_8U, 1);
+	IplImage *pCombineHistoImg = cvCreateImage(cvSize(256 * 2, 128 * 2), IPL_DEPTH_8U, 1);
 	IplImage *pExtractionImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 3);
 
-	// 채널 분리
+	// channel 분리
 	cvSplit(pOriginalImg, pRedImg, pGreenImg, pBlueImg, NULL);
-	// 히스토그램 출력
+	// histogram print
 	pHistoImg = Histogram(pRedImg);
 	cvSetImageROI(pCombineHistoImg, cvRect(0, 0, pHistoImg->width, pHistoImg->height));
 	cvCopy(pHistoImg, pCombineHistoImg);
 	pHistoImg = Histogram(pGreenImg);
-	cvSetImageROI(pCombineHistoImg, cvRect( pHistoImg->width, 0, pHistoImg->width, pHistoImg->height));
+	cvSetImageROI(pCombineHistoImg, cvRect(pHistoImg->width, 0, pHistoImg->width, pHistoImg->height));
 	cvCopy(pHistoImg, pCombineHistoImg);
 	pHistoImg = Histogram(pBlueImg);
 	cvSetImageROI(pCombineHistoImg, cvRect(0, pHistoImg->height, pHistoImg->width, pHistoImg->height));
 	cvCopy(pHistoImg, pCombineHistoImg);
 	cvResetImageROI(pCombineHistoImg);
 
-	// 색 추출
+	// color extraction
 	for (int y = 0; y < 480; ++y)
 	{
-		for (int x = 0; x < 640; ++x)
+		for (int x = 0; x, 640; ++x)
 		{
 			if ((pRedImg->imageData[x + y * 640] >= m_nRGBdata[0] && pRedImg->imageData[x + y * 640] <= m_nRGBdata[1]) &&
 				(pGreenImg->imageData[x + y * 640] >= m_nRGBdata[2] && pGreenImg->imageData[x + y * 640] <= m_nRGBdata[3]) &&
-				(pGreenImg->imageData[x + y * 640] >= m_nRGBdata[4] && pGreenImg->imageData[x + y * 640] >= m_nRGBdata[5]))
+				(pBlueImg->imageData[x + y * 640] >= m_nRGBdata[4] && pBlueImg->imageData[x + y * 640] <= m_nRGBdata[5]))
 			{
 				pExtractionImg->imageData[x * 3 + y * 640 * 3 + 0] = pOriginalImg->imageData[x * 3 + y * 640 * 3 + 0];
 				pExtractionImg->imageData[x * 3 + y * 640 * 3 + 1] = pOriginalImg->imageData[x * 3 + y * 640 * 3 + 1];
@@ -541,14 +542,19 @@ void CAlgorithm::OCVColorExtraction(void)
 		}
 	}
 
-	// 사이즈 줄이기
+	// size 줄이기
 	cvResize(pExtractionImg, pReProcess1Img);
 	cvResize(pCombineHistoImg, pReProcess2Img);
 
-	// 추출한 color image
+	// Extracted Color Image
 	cvProcess1Img.CopyOf(pReProcess1Img, pReProcess1Img->nChannels / 3);
 	cvProcess1Img.Show(m_pProcess1DC->m_hDC, 0, 0, cvProcess1Img.Width(), cvProcess1Img.Height());
 	cvProcess1Img.Destroy();
+
+	// Histogram Print
+	cvProcess2Img.CopyOf(pReProcess2Img, pReProcess2Img->nChannels / 3);
+	cvProcess2Img.Show(m_pProcess2DC->m_hDC, 0, 0, cvProcess2Img.Width(), cvProcess2Img.Height());
+	cvProcess2Img.Destroy();
 
 	cvReleaseImage(&pRedImg);
 	cvReleaseImage(&pGreenImg);
@@ -836,9 +842,9 @@ IplImage *CAlgorithm::ImgZoom(IplImage *pOriginalImg, float fZoomInFactor)
 				for (int nChannel = 0; nChannel < 3; nChannel++)
 				{
 					l1 = (float)(BYTE)pOriginalImg->imageData[(nOrgX)* 3 + nOrgY * nWidth * 3 + nChannel];
-					l1 = (float)(BYTE)pOriginalImg->imageData[(nOrgX + 1)* 3 + nOrgY * nWidth * 3 + nChannel];
-					l1 = (float)(BYTE)pOriginalImg->imageData[(nOrgX + 1)* 3 + (nOrgY + 1) * nWidth * 3 + nChannel];
-					l1 = (float)(BYTE)pOriginalImg->imageData[(nOrgX)* 3 + (nOrgY + 1) * nWidth * 3 + nChannel];
+					l2 = (float)(BYTE)pOriginalImg->imageData[(nOrgX + 1)* 3 + nOrgY * nWidth * 3 + nChannel];
+					l3 = (float)(BYTE)pOriginalImg->imageData[(nOrgX + 1)* 3 + (nOrgY + 1) * nWidth * 3 + nChannel];
+					l4 = (float)(BYTE)pOriginalImg->imageData[(nOrgX)* 3 + (nOrgY + 1) * nWidth * 3 + nChannel];
 
 					// 이중 선형 보간을 통한 새로운 밝기값 계산
 					BYTE nNewValue = (BYTE)(l1*(1 - fSx)*(1 - fSy) + l2*fSx*(1 - fSy) + l3*fSx*fSy + l4*(1 - fSx)*fSy);

@@ -33,10 +33,6 @@ protected:
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
 public:
-	afx_msg void OnStnClickedStaticOriginal();
-	afx_msg void OnStnClickedStaticProcess1();
-	afx_msg void OnStnClickedStaticProcess2();
-	afx_msg void OnStnClickedStaticProcess3();
 	afx_msg void OnBnClickedCvload();
 	afx_msg void OnBnClickedHcload();
 	afx_msg void OnBnClickedCvgray();

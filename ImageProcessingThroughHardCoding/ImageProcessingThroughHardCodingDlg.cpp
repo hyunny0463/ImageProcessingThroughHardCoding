@@ -68,10 +68,6 @@ BEGIN_MESSAGE_MAP(CImageProcessingThroughHardCodingDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_STN_CLICKED(IDC_STATIC_ORIGINAL, &CImageProcessingThroughHardCodingDlg::OnStnClickedStaticOriginal)
-	ON_STN_CLICKED(IDC_STATIC_PROCESS1, &CImageProcessingThroughHardCodingDlg::OnStnClickedStaticProcess1)
-	ON_STN_CLICKED(IDC_STATIC_PROCESS2, &CImageProcessingThroughHardCodingDlg::OnStnClickedStaticProcess2)
-	ON_STN_CLICKED(IDC_STATIC_PROCESS3, &CImageProcessingThroughHardCodingDlg::OnStnClickedStaticProcess3)
 	ON_BN_CLICKED(Cvload, &CImageProcessingThroughHardCodingDlg::OnBnClickedCvload)
 	ON_BN_CLICKED(Hcload, &CImageProcessingThroughHardCodingDlg::OnBnClickedHcload)
 	ON_BN_CLICKED(Cvgray, &CImageProcessingThroughHardCodingDlg::OnBnClickedCvgray)
@@ -194,31 +190,6 @@ HCURSOR CImageProcessingThroughHardCodingDlg::OnQueryDragIcon()
 }
 
 
-
-void CImageProcessingThroughHardCodingDlg::OnStnClickedStaticOriginal()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-}
-
-
-void CImageProcessingThroughHardCodingDlg::OnStnClickedStaticProcess1()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-}
-
-
-void CImageProcessingThroughHardCodingDlg::OnStnClickedStaticProcess2()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-}
-
-
-void CImageProcessingThroughHardCodingDlg::OnStnClickedStaticProcess3()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-}
-
-
 void CImageProcessingThroughHardCodingDlg::OnBnClickedCvload()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
@@ -299,6 +270,7 @@ void CImageProcessingThroughHardCodingDlg::OnBnClickedCvextraction()
 	Algorithm.OCVColorExtraction();
 }
 
+
 void CImageProcessingThroughHardCodingDlg::OnNMCustomdrawRGB(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	LPNMCUSTOMDRAW pNMCD = reinterpret_cast<LPNMCUSTOMDRAW>(pNMHDR);
@@ -312,6 +284,7 @@ void CImageProcessingThroughHardCodingDlg::OnNMCustomdrawRGB(NMHDR *pNMHDR, LRES
 
 	*pResult = 0;
 }
+
 
 void CImageProcessingThroughHardCodingDlg::ColorSetting(void)
 {
@@ -328,6 +301,7 @@ void CImageProcessingThroughHardCodingDlg::ColorSetting(void)
 	m_ctrlRGB[5].SetPos(49);
 	Algorithm.m_nRGBdata[5] = 49;
 }
+
 
 void CImageProcessingThroughHardCodingDlg::OnBnClickedHccalibration()
 {
