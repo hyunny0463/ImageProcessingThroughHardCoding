@@ -522,7 +522,7 @@ void CAlgorithm::OCVColorExtraction(void)
 	// color extraction
 	for (int y = 0; y < 480; ++y)
 	{
-		for (int x = 0; x, 640; ++x)
+		for (int x = 0; x < 640; ++x)
 		{
 			if ((pRedImg->imageData[x + y * 640] >= m_nRGBdata[0] && pRedImg->imageData[x + y * 640] <= m_nRGBdata[1]) &&
 				(pGreenImg->imageData[x + y * 640] >= m_nRGBdata[2] && pGreenImg->imageData[x + y * 640] <= m_nRGBdata[3]) &&
@@ -721,20 +721,20 @@ double CAlgorithm::round(double num)
 	return dblResult;
 }
 
-IplImage *CAlgorithm::Histogram(IplImage *pOriginalImg)
+IplImage *CAlgorithm::Histogram(IplImage* pOriginalImg)
 {
-	CvvImage cvProcess1Img, cvProcess3Img;
-	IplImage *pReProcess1Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1);
-	IplImage *pReProcess3Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1);
+	//CvvImage cvProcess1Img, cvProcess3Img;
+	//IplImage *pReProcess1Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1);
+	//IplImage *pReProcess3Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1);
 	IplImage *pGrayImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1);
 
-	cvCvtColor(pOriginalImg, pGrayImg, CV_RGB2GRAY);
+	//cvCvtColor(pOriginalImg, pGrayImg, CV_RGB2GRAY);
 
-	cvResize(pGrayImg, pReProcess1Img);
+	//cvResize(pGrayImg, pReProcess1Img);
 
-	cvProcess1Img.CopyOf(pReProcess1Img, pReProcess1Img->nChannels / 3);
-	cvProcess1Img.Show(m_pProcess1DC->m_hDC, 0, 0, cvProcess1Img.Width(), cvProcess1Img.Height());
-	cvProcess1Img.Destroy();
+	//cvProcess1Img.CopyOf(pReProcess1Img, pReProcess1Img->nChannels / 3);
+	//cvProcess1Img.Show(m_pProcess1DC->m_hDC, 0, 0, cvProcess1Img.Width(), cvProcess1Img.Height());
+	//cvProcess1Img.Destroy();
 
 	int i, j, bin_size = 256;
 	int tmp = 0;
@@ -745,7 +745,7 @@ IplImage *CAlgorithm::Histogram(IplImage *pOriginalImg)
 	int hist_height = 128;
 	int hist_width = 256;
 
-	CvHistogram *hist = cvCreateHist(1, &bin_size, CV_HIST_ARRAY, hist_range, 1);
+	CvHistogram* hist = cvCreateHist(1, &bin_size, CV_HIST_ARRAY, hist_range, 1);
 
 	cvCalcHist(&pGrayImg, hist, 0, NULL);
 
@@ -755,12 +755,12 @@ IplImage *CAlgorithm::Histogram(IplImage *pOriginalImg)
 	int min_level = 0;
 	cvGetMinMaxHistValue(hist, &min_bin_value, &max_bin_value, &min_level, &max_level);
 
-	IplImage *hist_image = cvCreateImage(cvSize(hist_width, hist_height), IPL_DEPTH_8U, 1);
+	IplImage* hist_image = cvCreateImage(cvSize(hist_width, hist_height), IPL_DEPTH_8U, 1);
 
 	int tmp_hist_height = cvRound(max_bin_value);
 
-	IplImage *tmp_hist_image1 = cvCreateImage(cvSize(hist_width, tmp_hist_height), IPL_DEPTH_8U, 1);
-	IplImage *tmp_hist_image2 = cvCreateImage(cvSize(hist_width, hist_height), IPL_DEPTH_8U, 1);
+	IplImage* tmp_hist_image1 = cvCreateImage(cvSize(hist_width, tmp_hist_height), IPL_DEPTH_8U, 1);
+	IplImage* tmp_hist_image2 = cvCreateImage(cvSize(hist_width, hist_height), IPL_DEPTH_8U, 1);
 
 	cvSetZero(tmp_hist_image1);
 
@@ -786,18 +786,18 @@ IplImage *CAlgorithm::Histogram(IplImage *pOriginalImg)
 		}
 	}
 
-	cvResize(hist_image, pReProcess3Img);
+	//cvResize(hist_image, pReProcess3Img);
 
-	cvProcess3Img.CopyOf(pReProcess3Img);
-	cvProcess3Img.Show(m_pProcess3DC->m_hDC, 0, 0, cvProcess3Img.Width(), cvProcess3Img.Height());
+	//cvProcess3Img.CopyOf(pReProcess3Img);
+	//cvProcess3Img.Show(m_pProcess3DC->m_hDC, 0, 0, cvProcess3Img.Width(), cvProcess3Img.Height());
 
 	cvReleaseHist(&hist);
 
 	cvReleaseImage(&tmp_hist_image1);
 	cvReleaseImage(&tmp_hist_image2);
 	cvReleaseImage(&pGrayImg);
-	cvReleaseImage(&pReProcess1Img);
-	cvReleaseImage(&pReProcess3Img);
+	//cvReleaseImage(&pReProcess1Img);
+	//cvReleaseImage(&pReProcess3Img);
 
 	return hist_image;
 }
