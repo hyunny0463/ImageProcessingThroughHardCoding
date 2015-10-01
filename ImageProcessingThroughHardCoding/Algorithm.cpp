@@ -496,14 +496,14 @@ void CAlgorithm::OCVColorExtraction(void)
 
 	//Color Extraction Part
 	CvvImage cvProcess1Img, cvProcess2Img, cvProcess3Img;
-	IplImage *pReProcess1Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3);
-	IplImage *pReProcess2Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1);
-	IplImage *pRedImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1);
-	IplImage *pGreenImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1);
-	IplImage *pBlueImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1);
-	IplImage *pHistoImg = cvCreateImage(cvSize(256, 128), IPL_DEPTH_8U, 1);
-	IplImage *pCombineHistoImg = cvCreateImage(cvSize(256 * 2, 128 * 2), IPL_DEPTH_8U, 1);
-	IplImage *pExtractionImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 3);
+	IplImage *pReProcess1Img	=	cvCreateImage	(	cvSize( 320, 240 ),			IPL_DEPTH_8U, 3	);
+	IplImage *pReProcess2Img	=	cvCreateImage	(	cvSize( 320, 240 ),			IPL_DEPTH_8U, 1	);
+	IplImage *pRedImg			=	cvCreateImage	(	cvSize( 640, 480 ),			IPL_DEPTH_8U, 1	);
+	IplImage *pGreenImg			=	cvCreateImage	(	cvSize( 640, 480 ),			IPL_DEPTH_8U, 1	);
+	IplImage *pBlueImg			=	cvCreateImage	(	cvSize( 640, 480 ),			IPL_DEPTH_8U, 1	);
+	IplImage *pHistoImg			=	cvCreateImage	(	cvSize( 256, 128 ),			IPL_DEPTH_8U, 1	);
+	IplImage *pCombineHistoImg	=	cvCreateImage	(	cvSize( 256 * 2, 128 * 2 ), IPL_DEPTH_8U, 1	);
+	IplImage *pExtractionImg	=	cvCreateImage	(	cvSize( 640, 480),			IPL_DEPTH_8U, 3	);
 
 	// channel ºÐ¸®
 	cvSplit(pOriginalImg, pRedImg, pGreenImg, pBlueImg, NULL);
@@ -524,9 +524,9 @@ void CAlgorithm::OCVColorExtraction(void)
 	{
 		for (int x = 0; x < 640; ++x)
 		{
-			if ((pRedImg->imageData[x + y * 640] >= m_nRGBdata[0] && pRedImg->imageData[x + y * 640] <= m_nRGBdata[1]) &&
-				(pGreenImg->imageData[x + y * 640] >= m_nRGBdata[2] && pGreenImg->imageData[x + y * 640] <= m_nRGBdata[3]) &&
-				(pBlueImg->imageData[x + y * 640] >= m_nRGBdata[4] && pBlueImg->imageData[x + y * 640] <= m_nRGBdata[5]))
+			if (( pRedImg	->imageData[x + y * 640] >= m_nRGBdata[0] && pRedImg	->imageData[x + y * 640] <= m_nRGBdata[1]) &&
+				( pGreenImg	->imageData[x + y * 640] >= m_nRGBdata[2] && pGreenImg	->imageData[x + y * 640] <= m_nRGBdata[3]) &&
+				( pBlueImg	->imageData[x + y * 640] >= m_nRGBdata[4] && pBlueImg	->imageData[x + y * 640] <= m_nRGBdata[5]))
 			{
 				pExtractionImg->imageData[x * 3 + y * 640 * 3 + 0] = pOriginalImg->imageData[x * 3 + y * 640 * 3 + 0];
 				pExtractionImg->imageData[x * 3 + y * 640 * 3 + 1] = pOriginalImg->imageData[x * 3 + y * 640 * 3 + 1];
@@ -535,9 +535,9 @@ void CAlgorithm::OCVColorExtraction(void)
 
 			else
 			{
-				pExtractionImg->imageData[x * 3 + y * 640 * 3 + 0];
-				pExtractionImg->imageData[x * 3 + y * 640 * 3 + 1];
-				pExtractionImg->imageData[x * 3 + y * 640 * 3 + 2];
+				pExtractionImg->imageData[x * 3 + y * 640 * 3 + 0] = 0;
+				pExtractionImg->imageData[x * 3 + y * 640 * 3 + 1] = 0;
+				pExtractionImg->imageData[x * 3 + y * 640 * 3 + 2] = 0;
 			}
 		}
 	}
@@ -726,7 +726,7 @@ IplImage *CAlgorithm::Histogram(IplImage* pOriginalImg)
 	//CvvImage cvProcess1Img, cvProcess3Img;
 	//IplImage *pReProcess1Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1);
 	//IplImage *pReProcess3Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1);
-	IplImage *pGrayImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1);
+	//IplImage *pGrayImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1);
 
 	//cvCvtColor(pOriginalImg, pGrayImg, CV_RGB2GRAY);
 
@@ -747,7 +747,7 @@ IplImage *CAlgorithm::Histogram(IplImage* pOriginalImg)
 
 	CvHistogram* hist = cvCreateHist(1, &bin_size, CV_HIST_ARRAY, hist_range, 1);
 
-	cvCalcHist(&pGrayImg, hist, 0, NULL);
+	cvCalcHist(&pOriginalImg, hist, 0, NULL);
 
 	float max_bin_value = 0;
 	float min_bin_value = 0;
@@ -795,7 +795,7 @@ IplImage *CAlgorithm::Histogram(IplImage* pOriginalImg)
 
 	cvReleaseImage(&tmp_hist_image1);
 	cvReleaseImage(&tmp_hist_image2);
-	cvReleaseImage(&pGrayImg);
+	//cvReleaseImage(&pGrayImg);
 	//cvReleaseImage(&pReProcess1Img);
 	//cvReleaseImage(&pReProcess3Img);
 
