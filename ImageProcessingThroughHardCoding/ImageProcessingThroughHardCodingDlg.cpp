@@ -88,6 +88,9 @@ BEGIN_MESSAGE_MAP(CImageProcessingThroughHardCodingDlg, CDialogEx)
 	ON_BN_CLICKED(Hccalibration, &CImageProcessingThroughHardCodingDlg::OnBnClickedHccalibration)
 	ON_BN_CLICKED(Cvresize, &CImageProcessingThroughHardCodingDlg::OnBnClickedCvresize)
 	ON_BN_CLICKED(Hcresize, &CImageProcessingThroughHardCodingDlg::OnBnClickedHcresize)
+	ON_BN_CLICKED(Select1, &CImageProcessingThroughHardCodingDlg::OnBnClickedSelect1)
+	ON_BN_CLICKED(Select2, &CImageProcessingThroughHardCodingDlg::OnBnClickedSelect2)
+	ON_BN_CLICKED(Hclabeling, &CImageProcessingThroughHardCodingDlg::OnBnClickedHclabeling)
 END_MESSAGE_MAP()
 
 
@@ -321,4 +324,31 @@ void CImageProcessingThroughHardCodingDlg::OnBnClickedHcresize()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	Algorithm.HCVResize();
+}
+
+
+void CImageProcessingThroughHardCodingDlg::OnBnClickedSelect1()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	for (int i = 0; i < 6; i++)
+	{
+		Algorithm.m_nSelect1RgbData[i] = Algorithm.m_nRGBdata[i];
+	}
+}
+
+
+void CImageProcessingThroughHardCodingDlg::OnBnClickedSelect2()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	for (int i = 0; i < 6; i++)
+	{
+		Algorithm.m_nSelect2RgbData[i] = Algorithm.m_nRGBdata[i];
+	}
+}
+
+
+void CImageProcessingThroughHardCodingDlg::OnBnClickedHclabeling()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	Algorithm.HCVLabeling();
 }

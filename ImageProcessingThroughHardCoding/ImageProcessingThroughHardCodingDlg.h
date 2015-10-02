@@ -52,4 +52,7 @@ public:
 	afx_msg void OnBnClickedHccalibration();
 	afx_msg void OnBnClickedCvresize();
 	afx_msg void OnBnClickedHcresize();
+	afx_msg void OnBnClickedSelect1();
+	afx_msg void OnBnClickedSelect2();
+	afx_msg void OnBnClickedHclabeling();
 };

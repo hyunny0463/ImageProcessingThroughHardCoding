@@ -38,6 +38,7 @@ public:
 	void ImgCalibration(void);
 
 	double round(double num);
+	int Labeling(IplImage* image, int nThreshold);
 	
 	IplImage* OriginalImg;
 	HWND hWnd;
