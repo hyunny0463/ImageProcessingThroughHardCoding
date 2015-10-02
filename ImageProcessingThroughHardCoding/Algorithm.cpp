@@ -946,7 +946,7 @@ int CAlgorithm::_Labeling(unsigned char* DataBuf, int nWidth, int nHeight, int n
 				num++;
 				DataBuf[nY * nWidth + nX] = num;
 				StartX = nX, StartY = nY, EndX = nX, EndY = nY;
-				__NRFIndNeighbor(DataBuf, nWidht, nHeight, nX, nY, &StartX, &StartY, &EndX, &EndY);
+				__NRFIndNeighbor(DataBuf, nWidth, nHeight, nX, nY, &StartX, &StartY, &EndX, &EndY);
 
 				if (__Area(DataBuf, StartX, StartY, EndX, EndY, nWidth, num) < nThreshold)
 				{
@@ -1035,7 +1035,7 @@ int CAlgorithm::__NRFIndNeighbor(unsigned char* DataBuf, int nWidth, int nHeight
 
 	while (1)
 	{
-		if ((CurrentPointx != 0) && (DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x - 1] == 255))	// -X 방향
+		if ((CurrentPoint.x != 0) && (DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x - 1] == 255))	// -X 방향
 		{
 			if (m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x - 1].bVisitedFlag == FALSE)
 			{
@@ -1088,7 +1088,7 @@ int CAlgorithm::__NRFIndNeighbor(unsigned char* DataBuf, int nWidth, int nHeight
 			{
 				DataBuf[(CurrentPoint.y - 1) * nWidth + CurrentPoint.x] = DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x];	// if so, mart it
 				m_vPoint[(CurrentPoint.y - 1) * nWidth + CurrentPoint.x].bVisitedFlag = TRUE;
-				m_vPoint[(CurrentPoint.y - 1) * nWidth + CurrentPoint.x].ptReturnPoint = CurretnPoint;
+				m_vPoint[(CurrentPoint.y - 1) * nWidth + CurrentPoint.x].ptReturnPoint = CurrentPoint;
 				CurrentPoint.y--;
 
 				if (CurrentPoint.y <= 0)
@@ -1109,7 +1109,7 @@ int CAlgorithm::__NRFIndNeighbor(unsigned char* DataBuf, int nWidth, int nHeight
 		{
 			if (m_vPoint[(CurrentPoint.y + 1) * nWidth + CurrentPoint.x].bVisitedFlag == FALSE)
 			{
-				DataBuf[(CurrentPoint.y + 1) * nWidth + CurrentPoint.x] = DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x];	// if so, martk it
+				DataBuf[(CurrentPoint.y + 1) * nWidth + CurrentPoint.x] = DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x];	// if so, mark it
 				m_vPoint[(CurrentPoint.y + 1) * nWidth + CurrentPoint.x].bVisitedFlag = TRUE;
 				m_vPoint[(CurrentPoint.y + 1) * nWidth + CurrentPoint.x].ptReturnPoint = CurrentPoint;
 				CurrentPoint.y++;
@@ -1128,7 +1128,7 @@ int CAlgorithm::__NRFIndNeighbor(unsigned char* DataBuf, int nWidth, int nHeight
 			}
 		}
 
-		if ((CurrentPoint.x == m_vPoint[CurrentPoint.y * nWidth * CurrentPoint.x].ptReturnPoint.x) && (CurrentPoint.y == m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x].ptReturnPOint.y))
+		if ((CurrentPoint.x == m_vPoint[CurrentPoint.y * nWidth * CurrentPoint.x].ptReturnPoint.x) && (CurrentPoint.y == m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x].ptReturnPoint.y))
 		{
 			break;
 		}
@@ -1172,7 +1172,7 @@ void CAlgorithm::HCVLabeling(void)
 	cvResize(pOriginalImg, pReOriginalImg);
 
 	cvOriginalImg.CopyOf(pReOriginalImg, pReOriginalImg->nChannels / 3);
-	cvOriginalImg.Show(m_pOriginalDC->m_hDC)hDC, 0, 0, cvOriginalImg.Width(), cvOriginalImg.Height() );
+	cvOriginalImg.Show(m_pOriginalDC->m_hDC, 0, 0, cvOriginalImg.Width(), cvOriginalImg.Height() );
 	cvOriginalImg.Destroy();
 
 	cvReleaseImage(&pReOriginalImg);

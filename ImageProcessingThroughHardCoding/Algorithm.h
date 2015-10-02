@@ -34,11 +34,18 @@ public:
 	void HCVSplitImage(void);
 	void HCVHistogram(void);
 	void HCVResize(void);
-
-	void ImgCalibration(void);
+	void HCVLabeling(void);
 
 	double round(double num);
 	int Labeling(IplImage* image, int nThreshold);
+	void ImgCalibration(void);
+	void DeletevPoint();
+	void InitvPoint(int nWidth, int nHeight);
+	int _Labeling(unsigned char* DataBuf, int nWidth, int nHeight, int nThreshold);
+	void DetectLabelingRegion(int nLabelNumber, unsigned char* DataBuf, int nWidth, int nHeight);
+	int __NRFIndNeighbor(unsigned char* DataBuf, int nWidth, int nHeight, int nPosX, int nPosY, int* StartX, int* StartY, int* EndX, int* EndY);
+	int __Area(unsigned char* DataBuf, int StartX, int StartY, int ENdX, int EndY, int nWidth, int nLevel);
+
 	
 	IplImage* OriginalImg;
 	HWND hWnd;
