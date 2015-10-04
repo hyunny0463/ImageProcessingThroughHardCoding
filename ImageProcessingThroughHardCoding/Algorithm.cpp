@@ -1,14 +1,28 @@
 #include "stdafx.h"
 #include "Algorithm.h"
 
+#define		_DEF_MAX_BLOBS		10000
+#define		_DEF_MAX_LABEL		100
+
 
 CAlgorithm::CAlgorithm()
 {
+	m_nThreshold	= 0;
+	m_nBlobs		= _DEF_MAX_BLOBS;
+	m_Image			= NULL;
+	m_recBlobs		= NULL;
 }
 
 
 CAlgorithm::~CAlgorithm()
 {
+	if ( m_Image != NULL )	cvReleaseImage(&m_Image);
+
+	if ( m_recBlobs != NULL )
+	{
+		delete m_recBlobs ;
+		m_recBlobs = NULL ;
+	}
 }
 
 void CAlgorithm::SetResultDC(CDC* pOriginalDC, CDC* pProcess1DC, CDC* pProcess2DC, CDC* pProcess3DC)
@@ -1197,7 +1211,7 @@ void CAlgorithm::HCVLabeling(void)
 	{
 		for (int x = 0; x < nWidth; ++x)
 		{
-			if ((pRedImg->imageData[x + y 8 nWidth] >= m_nSelect1RgbData[0] && pRedImg->imageData[x + y*nWidth] <= m_nSelect1RgbData[1]) && (pGreenImg->imageData[x + y * nWidth] >= m_nSelect1RgbData[2] && pGreenImg->imageData[x + y * nWidth] <= m_nSelect1RgbData[3]) && (pBlueImg->imageData[x + y * nWidth] <= m_nSelect1RgbData[5]))
+			if ((pRedImg->imageData[x + y * nWidth] >= m_nSelect1RgbData[0] && pRedImg->imageData[x + y*nWidth] <= m_nSelect1RgbData[1]) && (pGreenImg->imageData[x + y * nWidth] >= m_nSelect1RgbData[2] && pGreenImg->imageData[x + y * nWidth] <= m_nSelect1RgbData[3]) && (pBlueImg->imageData[x + y * nWidth] <= m_nSelect1RgbData[5]))
 			{
 				pExtractionImg->imageData[x + y * nWidth] = (BYTE)0;
 			}
@@ -1235,7 +1249,7 @@ void CAlgorithm::HCVLabeling(void)
 
 	// TXT 파일로 출력
 	FILE* savefile;
-	savefile = fopen(".\\LabelingData.txt"."wb");
+	savefile = fopen(".\\LabelingData.txt","wb");
 
 	for (int i = 0; i < pExtractionImg->height; i++)
 	{

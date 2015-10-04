@@ -9,6 +9,12 @@
 
 #endif
 
+typedef struct 
+{
+	BOOL	bVisitedFlag;
+	CvPoint	ptReturnPoint;
+} Visited;
+
 class CAlgorithm
 {
 public:
@@ -50,6 +56,12 @@ public:
 	IplImage* OriginalImg;
 	HWND hWnd;
 	CRect rectStaticClient;
+
+	IplImage*	m_Image;
+	int			m_nThreshold;
+	Visited*	m_vPoint;
+	int			m_nBlobs;
+	CvRect*		m_recBlobs;
 
 	IplImage *Histogram(IplImage *pOriginalImg);
 	int m_nRGBdata[6];
