@@ -91,6 +91,8 @@ BEGIN_MESSAGE_MAP(CImageProcessingThroughHardCodingDlg, CDialogEx)
 	ON_BN_CLICKED(Select1, &CImageProcessingThroughHardCodingDlg::OnBnClickedSelect1)
 	ON_BN_CLICKED(Select2, &CImageProcessingThroughHardCodingDlg::OnBnClickedSelect2)
 	ON_BN_CLICKED(Hclabeling, &CImageProcessingThroughHardCodingDlg::OnBnClickedHclabeling)
+	ON_BN_CLICKED(Cvaddsub, &CImageProcessingThroughHardCodingDlg::OnBnClickedCvaddsub)
+	ON_BN_CLICKED(Hcaddsub, &CImageProcessingThroughHardCodingDlg::OnBnClickedHcaddsub)
 END_MESSAGE_MAP()
 
 
@@ -98,49 +100,49 @@ END_MESSAGE_MAP()
 
 BOOL CImageProcessingThroughHardCodingDlg::OnInitDialog()
 {
-	CDialogEx::OnInitDialog();
+	CDialogEx::OnInitDialog() ;
 
 	// 시스템 메뉴에 "정보..." 메뉴 항목을 추가합니다.
 
 	// IDM_ABOUTBOX는 시스템 명령 범위에 있어야 합니다.
-	ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
-	ASSERT(IDM_ABOUTBOX < 0xF000);
+	ASSERT ( ( IDM_ABOUTBOX & 0xFFF0 ) == IDM_ABOUTBOX ) ;
+	ASSERT ( IDM_ABOUTBOX < 0xF000 ) ;
 
-	CMenu* pSysMenu = GetSystemMenu(FALSE);
+	CMenu* pSysMenu = GetSystemMenu(FALSE) ;
 	if (pSysMenu != NULL)
 	{
-		BOOL bNameValid;
-		CString strAboutMenu;
-		bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX);
-		ASSERT(bNameValid);
+		BOOL bNameValid ;
+		CString strAboutMenu ;
+		bNameValid = strAboutMenu.LoadString(IDS_ABOUTBOX) ;
+		ASSERT(bNameValid) ;
 		if (!strAboutMenu.IsEmpty())
 		{
-			pSysMenu->AppendMenu(MF_SEPARATOR);
-			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
+			pSysMenu->AppendMenu(MF_SEPARATOR) ;
+			pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu) ;
 		}
 	}
 
 	// 이 대화 상자의 아이콘을 설정합니다.  응용 프로그램의 주 창이 대화 상자가 아닐 경우에는
 	//  프레임워크가 이 작업을 자동으로 수행합니다.
-	SetIcon(m_hIcon, TRUE);			// 큰 아이콘을 설정합니다.
-	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
+	SetIcon ( m_hIcon, TRUE ) ;			// 큰 아이콘을 설정합니다.
+	SetIcon ( m_hIcon, FALSE ) ;		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
-	Algorithm.SetResultDC(GetDlgItem(IDC_STATIC_ORIGINAL)->GetDC(),
-		GetDlgItem(IDC_STATIC_PROCESS1)->GetDC(),
-		GetDlgItem(IDC_STATIC_PROCESS2)->GetDC(),
-		GetDlgItem(IDC_STATIC_PROCESS3)->GetDC());
+	Algorithm.SetResultDC ( GetDlgItem ( IDC_STATIC_ORIGINAL ) -> GetDC(),
+							GetDlgItem ( IDC_STATIC_PROCESS1 ) -> GetDC(),
+							GetDlgItem ( IDC_STATIC_PROCESS2 ) -> GetDC(),
+							GetDlgItem ( IDC_STATIC_PROCESS3 ) -> GetDC() ) ;
 
-	m_ctrlRGB[0].SetRange(-128, 127);
-	m_ctrlRGB[1].SetRange(-128, 127);
-	m_ctrlRGB[2].SetRange(-128, 127);
-	m_ctrlRGB[3].SetRange(-128, 127);
-	m_ctrlRGB[4].SetRange(-128, 127);
-	m_ctrlRGB[5].SetRange(-128, 127);
+	m_ctrlRGB[0].SetRange(-128, 127) ;
+	m_ctrlRGB[1].SetRange(-128, 127) ;
+	m_ctrlRGB[2].SetRange(-128, 127) ;
+	m_ctrlRGB[3].SetRange(-128, 127) ;
+	m_ctrlRGB[4].SetRange(-128, 127) ;
+	m_ctrlRGB[5].SetRange(-128, 127) ;
 
-	ColorSetting();
+	ColorSetting() ;
 
-	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
+	return TRUE ;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
 void CImageProcessingThroughHardCodingDlg::OnSysCommand(UINT nID, LPARAM lParam)
@@ -351,4 +353,18 @@ void CImageProcessingThroughHardCodingDlg::OnBnClickedHclabeling()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	Algorithm.HCVLabeling();
+}
+
+
+void CImageProcessingThroughHardCodingDlg::OnBnClickedCvaddsub()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	Algorithm.OCVAddsub();
+}
+
+
+void CImageProcessingThroughHardCodingDlg::OnBnClickedHcaddsub()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	Algorithm.HCVAddsub();
 }

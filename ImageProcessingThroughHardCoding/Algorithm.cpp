@@ -7,16 +7,16 @@
 
 CAlgorithm::CAlgorithm()
 {
-	m_nThreshold	= 0;
-	m_nBlobs		= _DEF_MAX_BLOBS;
-	m_Image			= NULL;
-	m_recBlobs		= NULL;
+	m_nThreshold	= 0 ;
+	m_nBlobs		= _DEF_MAX_BLOBS ;
+	m_Image			= NULL ;
+	m_recBlobs		= NULL ;
 }
 
 
 CAlgorithm::~CAlgorithm()
 {
-	if ( m_Image != NULL )	cvReleaseImage(&m_Image);
+	if ( m_Image != NULL )	cvReleaseImage ( &m_Image ) ;
 
 	if ( m_recBlobs != NULL )
 	{
@@ -1021,15 +1021,15 @@ void CAlgorithm::DetectLabelingRegion(int nLabelNumber, unsigned char* DataBuf, 
 					int top = m_recBlobs[nLabelIndex - 1].y;
 					int bottom = top + m_recBlobs[nLabelIndex - 1].height;
 
-					if (left >= nX)	left = nX;
-					if (right >= nX)	right = nX;
-					if (top >= nX)	top = nY;
-					if (bottom >= nX)	bottom = nY;
+					if ( left	>= nX )	left	= nX;
+					if ( right	<= nX )	right	= nX;
+					if ( top	>= nX )	top		= nY;
+					if ( bottom	<= nX )	bottom	= nY;
 
-					m_recBlobs[nLabelIndex - 1].x = left;
-					m_recBlobs[nLabelIndex - 1].y = right;
-					m_recBlobs[nLabelIndex - 1].width = right - left;
-					m_recBlobs[nLabelIndex - 1].height = bottom - top;
+					m_recBlobs[nLabelIndex - 1].x		= left;
+					m_recBlobs[nLabelIndex - 1].y		= top;
+					m_recBlobs[nLabelIndex - 1].width	= right - left;
+					m_recBlobs[nLabelIndex - 1].height	= bottom - top;
 				}
 			}
 		}
@@ -1049,7 +1049,7 @@ int CAlgorithm::__NRFIndNeighbor(unsigned char* DataBuf, int nWidth, int nHeight
 
 	while (1)
 	{
-		if ((CurrentPoint.x != 0) && (DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x - 1] == 255))	// -X 방향
+		if ( ( CurrentPoint.x != 0 ) && ( DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x - 1] == 255 ) )	// -X 방향
 		{
 			if (m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x - 1].bVisitedFlag == FALSE)
 			{
@@ -1096,21 +1096,21 @@ int CAlgorithm::__NRFIndNeighbor(unsigned char* DataBuf, int nWidth, int nHeight
 			}
 		}
 
-		if ((CurrentPoint.y != 0) && (DataBuf[(CurrentPoint.y - 1) * nWidth + CurrentPoint.x] == 255))	// -Y 방향
+		if ( ( CurrentPoint.y != 0 ) && ( DataBuf[ ( CurrentPoint.y - 1 ) * nWidth + CurrentPoint.x ] == 255 ) )	// -Y 방향
 		{
-			if (m_vPoint[(CurrentPoint.y - 1) * nWidth + CurrentPoint.x].bVisitedFlag == FALSE)
+			if ( m_vPoint[ ( CurrentPoint.y - 1 ) * nWidth + CurrentPoint.x ].bVisitedFlag == FALSE )
 			{
-				DataBuf[(CurrentPoint.y - 1) * nWidth + CurrentPoint.x] = DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x];	// if so, mart it
-				m_vPoint[(CurrentPoint.y - 1) * nWidth + CurrentPoint.x].bVisitedFlag = TRUE;
-				m_vPoint[(CurrentPoint.y - 1) * nWidth + CurrentPoint.x].ptReturnPoint = CurrentPoint;
+				DataBuf	[ ( CurrentPoint.y - 1 ) * nWidth + CurrentPoint.x ] = DataBuf[ CurrentPoint.y * nWidth + CurrentPoint.x ] ;	// if so, mart it
+				m_vPoint[ ( CurrentPoint.y - 1 ) * nWidth + CurrentPoint.x ].bVisitedFlag = TRUE ;
+				m_vPoint[ ( CurrentPoint.y - 1 ) * nWidth + CurrentPoint.x ].ptReturnPoint = CurrentPoint ;
 				CurrentPoint.y--;
 
-				if (CurrentPoint.y <= 0)
+				if ( CurrentPoint.y <= 0 )
 				{
 					CurrentPoint.y = 0;
 				}
 
-				if (*StartY >= CurrentPoint.y)
+				if ( *StartY >= CurrentPoint.y )
 				{
 					*StartY = CurrentPoint.y;
 				}
@@ -1119,36 +1119,38 @@ int CAlgorithm::__NRFIndNeighbor(unsigned char* DataBuf, int nWidth, int nHeight
 			}
 		}
 
-		if ((CurrentPoint.y != nHeight - 1) && (DataBuf[(CurrentPoint.y + 1) * nWidth + CurrentPoint.x] == 255))	// +Y 방향
+		if ( ( CurrentPoint.y != nHeight - 1 ) && ( DataBuf[ ( CurrentPoint.y + 1 ) * nWidth + CurrentPoint.x ] == 255 ) )	// +Y 방향
 		{
-			if (m_vPoint[(CurrentPoint.y + 1) * nWidth + CurrentPoint.x].bVisitedFlag == FALSE)
+			if ( m_vPoint[ ( CurrentPoint.y + 1 ) * nWidth + CurrentPoint.x ].bVisitedFlag == FALSE )
 			{
-				DataBuf[(CurrentPoint.y + 1) * nWidth + CurrentPoint.x] = DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x];	// if so, mark it
-				m_vPoint[(CurrentPoint.y + 1) * nWidth + CurrentPoint.x].bVisitedFlag = TRUE;
-				m_vPoint[(CurrentPoint.y + 1) * nWidth + CurrentPoint.x].ptReturnPoint = CurrentPoint;
-				CurrentPoint.y++;
+				DataBuf	[ ( CurrentPoint.y + 1 ) * nWidth + CurrentPoint.x ] = DataBuf[ CurrentPoint.y * nWidth + CurrentPoint.x ] ;	// if so, mark it
+				m_vPoint[ ( CurrentPoint.y + 1 ) * nWidth + CurrentPoint.x ].bVisitedFlag = TRUE ;
+				m_vPoint[ ( CurrentPoint.y + 1 ) * nWidth + CurrentPoint.x ].ptReturnPoint = CurrentPoint ;
+				CurrentPoint.y++ ;
 
-				if (CurrentPoint.y >= nHeight - 1)
+				if ( CurrentPoint.y >= nHeight - 1 )
 				{
-					CurrentPoint.y = nHeight - 1;
+					CurrentPoint.y = nHeight - 1 ;
 				}
 
-				if (*EndY <= CurrentPoint.y)
+				if ( *EndY <= CurrentPoint.y )
 				{
-					*EndY = CurrentPoint.y;
+					*EndY = CurrentPoint.y ;
 				}
 
 				continue;
 			}
 		}
 
-		if ((CurrentPoint.x == m_vPoint[CurrentPoint.y * nWidth * CurrentPoint.x].ptReturnPoint.x) && (CurrentPoint.y == m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x].ptReturnPoint.y))
+		if ( ( CurrentPoint.x == m_vPoint[ CurrentPoint.y * nWidth + CurrentPoint.x ].ptReturnPoint.x ) &&
+			 ( CurrentPoint.y == m_vPoint[ CurrentPoint.y * nWidth + CurrentPoint.x ].ptReturnPoint.y ) )
 		{
 			break;
 		}
+
 		else
 		{
-			CurrentPoint = m_vPoint[CurrentPoint.y * nWidth * CurrentPoint.x].ptReturnPoint;
+			CurrentPoint = m_vPoint[ CurrentPoint.y * nWidth + CurrentPoint.x ].ptReturnPoint ;
 		}
 	}
 
@@ -1211,7 +1213,11 @@ void CAlgorithm::HCVLabeling(void)
 	{
 		for (int x = 0; x < nWidth; ++x)
 		{
-			if ((pRedImg->imageData[x + y * nWidth] >= m_nSelect1RgbData[0] && pRedImg->imageData[x + y*nWidth] <= m_nSelect1RgbData[1]) && (pGreenImg->imageData[x + y * nWidth] >= m_nSelect1RgbData[2] && pGreenImg->imageData[x + y * nWidth] <= m_nSelect1RgbData[3]) && (pBlueImg->imageData[x + y * nWidth] <= m_nSelect1RgbData[5]))
+			if ( ( pRedImg->imageData[ x + y * nWidth ]	>= m_nSelect1RgbData[0] &&
+				pRedImg->imageData[ x + y * nWidth ]	<= m_nSelect1RgbData[1] ) &&
+				( pGreenImg->imageData[ x + y * nWidth ]>= m_nSelect1RgbData[2] &&
+				pGreenImg->imageData[ x + y * nWidth ]	<= m_nSelect1RgbData[3] ) &&
+				( pBlueImg->imageData[ x + y * nWidth ]	<= m_nSelect1RgbData[5] ) )
 			{
 				pExtractionImg->imageData[x + y * nWidth] = (BYTE)0;
 			}
@@ -1275,4 +1281,164 @@ void CAlgorithm::HCVLabeling(void)
 	
 	cvReleaseImage(&pReProcess1Img);
 	cvReleaseImage(&pReProcess2Img);
+}
+
+void CAlgorithm::OCVAddsub(void)
+{
+	// Original Image Load & Show
+	CvvImage cvOriginalImg;
+	IplImage* pOriginalImg;
+	pOriginalImg = cvLoadImage("OriginalImg.jpg");
+	IplImage* pReOriginalImg = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3);
+
+	cvResize(pOriginalImg, pReOriginalImg);
+	cvOriginalImg.CopyOf(pReOriginalImg, pReOriginalImg->nChannels / 3);
+	cvOriginalImg.Show(m_pOriginalDC->m_hDC, 0, 0, cvOriginalImg.Width(), cvOriginalImg.Height() );
+	cvOriginalImg.Destroy();
+
+	cvReleaseImage(&pReOriginalImg);
+
+	// Reverse Image
+	CvvImage cvProcess1Img;
+	IplImage* pReverseImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 3);
+	IplImage* pReProcess1Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3);
+
+	cvSub(pReverseImg, pOriginalImg, pReverseImg);
+
+	cvResize(pReverseImg, pReProcess1Img);
+	cvProcess1Img.CopyOf(pReProcess1Img, pReProcess1Img->nChannels / 3);
+	cvProcess1Img.Show(m_pProcess1DC->m_hDC, 0, 0, cvProcess1Img.Width(), cvProcess1Img.Height());
+	cvProcess1Img.Destroy();
+
+	cvReleaseImage(&pReverseImg);
+	cvReleaseImage(&pReProcess1Img);
+
+	// Add
+	CvvImage cvProcess2Img, cvProcess3Img; 
+	IplImage* pReProcess2Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3);
+	IplImage* pReProcess3Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3);
+	IplImage* pAddImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 3);
+	IplImage* pSubImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 3);
+
+	cvAdd(pOriginalImg, pOriginalImg, pAddImg);
+
+	// Add Image 출력
+	cvResize(pAddImg, pReProcess2Img);
+	cvProcess2Img.CopyOf(pReProcess2Img, pReProcess2Img->nChannels / 3);
+	cvProcess2Img.Show(m_pProcess2DC->m_hDC, 0, 0, cvProcess2Img.Width(), cvProcess2Img.Height());
+	cvProcess2Img.Destroy();
+
+	cvReleaseImage(&pReProcess2Img);
+	cvReleaseImage(&pAddImg);
+
+	// Sub
+	cvSub(pOriginalImg, pOriginalImg, pSubImg);
+	// Sub image 출력
+	cvResize(pSubImg, pReProcess3Img);
+	cvProcess3Img.CopyOf(pReProcess3Img, pReProcess3Img->nChannels / 3);
+	cvProcess3Img.Show(m_pProcess3DC->m_hDC, 0, 0, cvProcess3Img.Width(), cvProcess3Img.Height());
+	cvProcess3Img.Destroy();
+
+	cvReleaseImage(&pReProcess3Img);
+	cvReleaseImage(&pSubImg);
+	cvReleaseImage(&pOriginalImg);
+}
+
+void CAlgorithm::HCVAddsub(void)
+{
+	// Original Image Load & Show
+	CvvImage cvOriginalImg;
+	IplImage* pOriginalImg;
+	pOriginalImg = cvLoadImage("OriginalImg.jpg");
+	IplImage* pReOriginalImg = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3);
+
+	cvResize(pOriginalImg, pReOriginalImg);
+	cvOriginalImg.CopyOf(pReOriginalImg, pReOriginalImg->nChannels / 3);
+	cvOriginalImg.Show(m_pOriginalDC->m_hDC, 0, 0, cvOriginalImg.Width(), cvOriginalImg.Height());
+	cvOriginalImg.Destroy();
+
+	cvReleaseImage(&pReOriginalImg);
+
+	// Reverse Image
+	CvvImage cvProcess1Img;
+	IplImage* pReverseImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 3);
+	IplImage* pReProcess1Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3);
+
+	cvSub(pReverseImg, pOriginalImg, pReverseImg);
+
+	cvResize(pReverseImg, pReProcess1Img);
+	cvProcess1Img.CopyOf(pReProcess1Img, pReProcess1Img->nChannels / 3);
+	cvProcess1Img.Show(m_pProcess1DC->m_hDC, 0, 0, cvProcess1Img.Width(), cvProcess1Img.Height());
+	cvProcess1Img.Destroy();
+
+	cvReleaseImage(&pReverseImg);
+	cvReleaseImage(&pReProcess1Img);
+
+	// Add
+	CvvImage cvProcess2Img, cvProcess3Img;
+	IplImage* pReProcess2Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3);
+	IplImage* pReProcess3Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3);
+	IplImage* pAddImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 3);
+	IplImage* pSubImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 3);
+
+	ImgAdd(pOriginalImg, pOriginalImg, pAddImg);
+
+	// Add Image 출력
+	cvResize(pAddImg, pReProcess2Img);
+	cvProcess2Img.CopyOf(pReProcess2Img, pReProcess2Img->nChannels / 3);
+	cvProcess2Img.Show(m_pProcess2DC->m_hDC, 0, 0, cvProcess2Img.Width(), cvProcess2Img.Height());
+	cvProcess2Img.Destroy();
+
+	cvReleaseImage(&pReProcess2Img);
+	cvReleaseImage(&pAddImg);
+
+	// Sub
+	ImgSub(pOriginalImg, pOriginalImg, pSubImg);
+	// Sub image 출력
+	cvResize(pSubImg, pReProcess3Img);
+	cvProcess3Img.CopyOf(pReProcess3Img, pReProcess3Img->nChannels / 3);
+	cvProcess3Img.Show(m_pProcess3DC->m_hDC, 0, 0, cvProcess3Img.Width(), cvProcess3Img.Height());
+	cvProcess3Img.Destroy();
+
+	cvReleaseImage(&pReProcess3Img);
+	cvReleaseImage(&pSubImg);
+	cvReleaseImage(&pOriginalImg);
+}
+
+void CAlgorithm::ImgAdd(IplImage* pScr1Img, IplImage* pScr2Img, IplImage* pDstImg)
+{
+	int nHeight = pScr1Img->height;
+	int nWidth = pScr1Img->width;
+
+	for (int i = 0; i < nHeight * nWidth * 3; i++)
+	{
+		if ((BYTE)pScr1Img->imageData[i] + (BYTE)pScr2Img->imageData[i] < 255)
+		{
+			pDstImg->imageData[i] = (BYTE)pScr1Img->imageData[i] + (BYTE)pScr2Img->imageData[i];
+		}
+
+		else if ((BYTE)pScr1Img->imageData[i] + (BYTE)pScr2Img->imageData[i] >= 255)
+		{
+			pDstImg->imageData[i] + (BYTE)255;
+		}
+	}
+}
+
+void CAlgorithm::ImgSub(IplImage* pScr1Img, IplImage* pScr2Img, IplImage* pDstImg)
+{
+	int nHeight = pScr1Img->height;
+	int nWidth = pScr1Img->width;
+
+	for (int i = 0; i < nHeight * nWidth * 3; i++)
+	{
+		if ((BYTE)pScr1Img->imageData[i] - (BYTE)pScr2Img->imageData[i] < 255)
+		{
+			pDstImg->imageData[i] = (BYTE)pScr2Img->imageData[i] - (BYTE)pScr2Img->imageData[i];
+		}
+
+		else if ((BYTE)pScr1Img->imageData[i] - (BYTE)pScr2Img->imageData[i] >= 255)
+		{
+			pDstImg->imageData[i] = (BYTE)255;
+		}
+	}
 }

@@ -55,4 +55,6 @@ public:
 	afx_msg void OnBnClickedSelect1();
 	afx_msg void OnBnClickedSelect2();
 	afx_msg void OnBnClickedHclabeling();
+	afx_msg void OnBnClickedCvaddsub();
+	afx_msg void OnBnClickedHcaddsub();
 };

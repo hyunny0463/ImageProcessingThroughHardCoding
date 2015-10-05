@@ -33,6 +33,7 @@ public:
 	void OCVHistogram(void);
 	void OCVColorExtraction(void);
 	void OCVResize(void);
+	void OCVAddsub(void);
 
 	void HCVLoadImage(void);
 	void HCVGrayImage(void);
@@ -41,6 +42,7 @@ public:
 	void HCVHistogram(void);
 	void HCVResize(void);
 	void HCVLabeling(void);
+	void HCVAddsub(void);
 
 	double round(double num);
 	int Labeling(IplImage* image, int nThreshold);
@@ -51,6 +53,8 @@ public:
 	void DetectLabelingRegion(int nLabelNumber, unsigned char* DataBuf, int nWidth, int nHeight);
 	int __NRFIndNeighbor(unsigned char* DataBuf, int nWidth, int nHeight, int nPosX, int nPosY, int* StartX, int* StartY, int* EndX, int* EndY);
 	int __Area(unsigned char* DataBuf, int StartX, int StartY, int ENdX, int EndY, int nWidth, int nLevel);
+	void ImgAdd(IplImage* pSrc1Img, IplImage* pSrc2Img, IplImage* pDstImg) ;
+	void ImgSub(IplImage* pSrc1Img, IplImage* pSrc2Img, IplImage* pDstImg) ;
 
 	
 	IplImage* OriginalImg;
@@ -62,6 +66,8 @@ public:
 	Visited*	m_vPoint;
 	int			m_nBlobs;
 	CvRect*		m_recBlobs;
+	char		m_nSelect1RgbData[6];
+	char		m_nSelect2RgbData[6];
 
 	IplImage *Histogram(IplImage *pOriginalImg);
 	int m_nRGBdata[6];
