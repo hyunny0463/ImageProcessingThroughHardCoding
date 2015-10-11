@@ -56,6 +56,9 @@ public:
 	void ImgAdd(IplImage* pSrc1Img, IplImage* pSrc2Img, IplImage* pDstImg) ;
 	void ImgSub(IplImage* pSrc1Img, IplImage* pSrc2Img, IplImage* pDstImg) ;
 
+	IplImage *Histogram(IplImage *pOriginalImg);
+	IplImage *ImgZoom(IplImage *pOriginalImg, float fZoomInFactor);
+
 	
 	IplImage* OriginalImg;
 	HWND hWnd;
@@ -69,8 +72,5 @@ public:
 	char		m_nSelect1RgbData[6];
 	char		m_nSelect2RgbData[6];
 
-	IplImage *Histogram(IplImage *pOriginalImg);
 	int m_nRGBdata[6];
-
-	IplImage *ImgZoom(IplImage *pOriginalImg, float fZoomInFactor);
 };

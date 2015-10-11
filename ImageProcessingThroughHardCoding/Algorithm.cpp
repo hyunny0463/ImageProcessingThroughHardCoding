@@ -873,46 +873,47 @@ IplImage *CAlgorithm::ImgZoom(IplImage *pOriginalImg, float fZoomInFactor)
 
 int CAlgorithm::Labeling(IplImage* image, int nThreshold)
 {
-	if (image->nChannels != 1) return 0;
+	if ( image->nChannels != 1 ) return 0 ;
 
-	int nNumber;
+	int nNumber ;
 
-	int nWidth = image->width;
-	int nHeight = image->height;
+	int nWidth = image->width ;
+	int nHeight = image->height ;
 
-	unsigned char* tmpBuf = new unsigned char[nWidth * nHeight];
+	unsigned char* tmpBuf = new unsigned char[ nWidth * nHeight ] ;
 
-	int i, j;
+	int i, j ;
 
-	for (j = 0; j < nHeight; j++)
+	for ( j = 0 ; j < nHeight ; j++ )
 	{
-		for (i = 0; i < nWidth; i++)
+		for ( i = 0; i < nWidth ; i++ )
 		{
-			tmpBuf[j*nWidth + i] = (unsigned char)image->imageData[j*image->widthStep + i];
+			tmpBuf[ j * nWidth + i ] = (unsigned char)image->imageData[ j * image->widthStep + i ] ;
 		}
 	}
 
 	// 레이블링을 위한 포인트 초기화
-	InitvPoint(nWidth, nHeight);
+	InitvPoint( nWidth, nHeight ) ;
 	// 레이블링
-	nNumber = _Labeling(tmpBuf, nWidth, nHeight, nThreshold);
+	nNumber = _Labeling( tmpBuf, nWidth, nHeight, nThreshold ) ;
 	// 포인트 메모리 해제
-	DeletevPoint();
+	DeletevPoint() ;
 
-	if (nNumber != _DEF_MAX_BLOBS)
+	if ( nNumber != _DEF_MAX_BLOBS )
 	{
-		m_recBlobs = new CvRect[nNumber];
-	}
-	if (nNumber != 0)
-	{
-		DetectLabelingRegion(nNumber, tmpBuf, nWidth, nHeight);
+		m_recBlobs = new CvRect[ nNumber ] ;
 	}
 
-	for (j = 0; j < nHeight; j++)
+	if ( nNumber != 0 )
 	{
-		for (i = 0; i < nWidth; i++)
+		DetectLabelingRegion( nNumber, tmpBuf, nWidth, nHeight ) ;
+	}
+
+	for ( j = 0 ; j < nHeight ; j++ )
+	{
+		for ( i = 0 ; i < nWidth ; i++)
 		{
-			image->imageData[j*image->widthStep + i] = tmpBuf[j*nWidth + i];
+			image->imageData[ j * image->widthStep + i ] = tmpBuf[ j * nWidth + i ] ;
 		}
 	}
 
@@ -927,17 +928,17 @@ void CAlgorithm::DeletevPoint()
 
 void CAlgorithm::InitvPoint(int nWidth, int nHeight)
 {
-	int nX, nY;
+	int nX, nY ;
 
-	m_vPoint = new Visited[nWidth * nHeight];
+	m_vPoint = new Visited[ nWidth * nHeight ] ;
 
-	for (nY = 0; nY < nHeight; nY++)
+	for ( nY = 0 ; nY < nHeight ; nY++ )
 	{
-		for (nX = 0; nX < nWidth; nX++)
+		for ( nX = 0 ; nX < nWidth ; nX++ )
 		{
-			m_vPoint[nY * nWidth + nX].bVisitedFlag = FALSE;
-			m_vPoint[nY * nWidth + nX].ptReturnPoint.x = nX;
-			m_vPoint[nY * nWidth + nX].ptReturnPoint.y = nY;
+			m_vPoint[ nY * nWidth + nX ].bVisitedFlag = FALSE ;
+			m_vPoint[ nY * nWidth + nX ].ptReturnPoint.x = nX ;
+			m_vPoint[ nY * nWidth + nX ].ptReturnPoint.y = nY ;
 		}
 	}
 }
@@ -946,46 +947,46 @@ void CAlgorithm::InitvPoint(int nWidth, int nHeight)
 // nThreshold보다 작은 영역을 제외한 나머지를 blob으로 획득
 int CAlgorithm::_Labeling(unsigned char* DataBuf, int nWidth, int nHeight, int nThreshold)
 {
-	int Index = 0, num = 0;
-	int nX, nY, k, l;
-	int StartX, StartY, EndX, EndY;
+	int Index = 0, num = 0 ;
+	int nX, nY, k, l ;
+	int StartX, StartY, EndX, EndY ;
 
 	// Find connect components
-	for (nY = 0; nY < nHeight; nY++)
+	for ( nY = 0 ; nY < nHeight ; nY++ )
 	{
-		for (nX = 0; nX < nWidth; nX++)
+		for ( nX = 0 ; nX < nWidth ; nX++ )
 		{
-			if (DataBuf[nY * nWidth + nX] == 255) // Is this a new component?, 255 = 
+			if ( DataBuf[ nY * nWidth + nX ] == 255 ) // Is this a new component?, 255 = 
 			{
-				num++;
-				DataBuf[nY * nWidth + nX] = num;
-				StartX = nX, StartY = nY, EndX = nX, EndY = nY;
-				__NRFIndNeighbor(DataBuf, nWidth, nHeight, nX, nY, &StartX, &StartY, &EndX, &EndY);
+				num++ ;
+				DataBuf[ nY * nWidth + nX ] = num ;
+				StartX = nX, StartY = nY, EndX = nX, EndY = nY ;
+				__NRFIndNeighbor( DataBuf, nWidth, nHeight, nX, nY, &StartX, &StartY, &EndX, &EndY ) ;
 
-				if (__Area(DataBuf, StartX, StartY, EndX, EndY, nWidth, num) < nThreshold)
+				if ( __Area( DataBuf, StartX, StartY, EndX, EndY, nWidth, num ) < nThreshold )
 				{
-					for (k = StartY; k <= EndY; k++)
+					for ( k = StartY ; k <= EndY ; k++ )
 					{
-						for (l = StartX; l <= EndX; l++)
+						for ( l = StartX ; l <= EndX ; l++ )
 						{
-							if (DataBuf[k * nWidth + l] == num)
+							if ( DataBuf[ k * nWidth + l ] == num )
 							{
-								DataBuf[k * nWidth + l] = 0;
+								DataBuf[ k * nWidth + l ] = 0 ;
 							}
 						}
 					}
-					--num;
+					--num ;
 
-					if (num > 250)
+					if ( num > 250 )
 					{
-						return 0;
+						return 0 ;
 					}
 				}
 			}
 		}
 	}
 
-	return num;
+	return num ;
 }
 
 // Blob labeling해서 얻어진 결과의 rec을 얻어냄
@@ -996,40 +997,40 @@ void CAlgorithm::DetectLabelingRegion(int nLabelNumber, unsigned char* DataBuf, 
 
 	BOOL bFirstFlag[255] = { FALSE, };
 
-	for (nY = 1; nY < nHeight - 1; nY++)
+	for ( nY = 1 ; nY < nHeight - 1 ; nY++ )
 	{
-		for (nX = 1; nX < nWidth - 1; nX++)
+		for ( nX = 1 ; nX < nWidth - 1 ; nX++ )
 		{
-			nLabelIndex = DataBuf[nY * nWidth + nX];
+			nLabelIndex = DataBuf[ nY * nWidth + nX ] ;
 
-			if (nLabelIndex != 0)
+			if ( nLabelIndex != 0 )		//Is this a new component?, 255 == Object
 			{
-				if (bFirstFlag[nLabelIndex] == FALSE)
+				if (bFirstFlag[ nLabelIndex ] == FALSE )
 				{
-					m_recBlobs[nLabelIndex - 1].x = nX;
-					m_recBlobs[nLabelIndex - 1].y = nY;
-					m_recBlobs[nLabelIndex - 1].width = 0;
-					m_recBlobs[nLabelIndex - 1].height = 0;
+					m_recBlobs[ nLabelIndex - 1 ].x = nX ;
+					m_recBlobs[ nLabelIndex - 1 ].y = nY ;
+					m_recBlobs[ nLabelIndex - 1 ].width = 0 ;
+					m_recBlobs[ nLabelIndex - 1 ].height = 0 ;
 
-					bFirstFlag[nLabelIndex] = TRUE;
+					bFirstFlag[ nLabelIndex ] = TRUE ;
 				}
 
 				else
 				{
-					int left = m_recBlobs[nLabelIndex - 1].x;
-					int right = left + m_recBlobs[nLabelIndex - 1].width;
-					int top = m_recBlobs[nLabelIndex - 1].y;
-					int bottom = top + m_recBlobs[nLabelIndex - 1].height;
+					int left = m_recBlobs[ nLabelIndex - 1 ].x ;
+					int right = left + m_recBlobs[ nLabelIndex - 1 ].width ;
+					int top = m_recBlobs[ nLabelIndex - 1 ].y ;
+					int bottom = top + m_recBlobs[ nLabelIndex - 1 ].height ;
 
-					if ( left	>= nX )	left	= nX;
-					if ( right	<= nX )	right	= nX;
-					if ( top	>= nX )	top		= nY;
-					if ( bottom	<= nX )	bottom	= nY;
+					if ( left	>= nX )	left	= nX ;
+					if ( right	<= nX )	right	= nX ;
+					if ( top	>= nX )	top		= nY ;
+					if ( bottom	<= nX )	bottom	= nY ;
 
-					m_recBlobs[nLabelIndex - 1].x		= left;
-					m_recBlobs[nLabelIndex - 1].y		= top;
-					m_recBlobs[nLabelIndex - 1].width	= right - left;
-					m_recBlobs[nLabelIndex - 1].height	= bottom - top;
+					m_recBlobs[ nLabelIndex - 1 ].x			= left ;
+					m_recBlobs[ nLabelIndex - 1 ].y			= top ;
+					m_recBlobs[ nLabelIndex - 1 ].width		= right - left ;
+					m_recBlobs[ nLabelIndex - 1 ].height	= bottom - top ;
 				}
 			}
 		}
@@ -1038,58 +1039,58 @@ void CAlgorithm::DetectLabelingRegion(int nLabelNumber, unsigned char* DataBuf, 
 
 int CAlgorithm::__NRFIndNeighbor(unsigned char* DataBuf, int nWidth, int nHeight, int nPosX, int nPosY, int* StartX, int* StartY, int* EndX, int* EndY)
 {
-	CvPoint CurrentPoint;
+	CvPoint CurrentPoint ;
 
-	CurrentPoint.x = nPosX;
-	CurrentPoint.y = nPosY;
+	CurrentPoint.x = nPosX ;
+	CurrentPoint.y = nPosY ;
 
-	m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x].bVisitedFlag = TRUE;
-	m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x].ptReturnPoint.x = nPosX;
-	m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x].ptReturnPoint.y = nPosY;
+	m_vPoint[ CurrentPoint.y * nWidth + CurrentPoint.x ].bVisitedFlag = TRUE ;
+	m_vPoint[ CurrentPoint.y * nWidth + CurrentPoint.x ].ptReturnPoint.x = nPosX ;
+	m_vPoint[ CurrentPoint.y * nWidth + CurrentPoint.x ].ptReturnPoint.y = nPosY ;
 
 	while (1)
 	{
-		if ( ( CurrentPoint.x != 0 ) && ( DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x - 1] == 255 ) )	// -X 방향
+		if ( ( CurrentPoint.x != 0 ) && ( DataBuf[ CurrentPoint.y * nWidth + CurrentPoint.x - 1 ] == 255 ) )	// -X 방향
 		{
-			if (m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x - 1].bVisitedFlag == FALSE)
+			if ( m_vPoint[ CurrentPoint.y * nWidth + CurrentPoint.x - 1].bVisitedFlag == FALSE )
 			{
-				DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x - 1] = DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x];	// If so, mark it
-				m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x - 1].bVisitedFlag = TRUE;
-				m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x - 1].ptReturnPoint = CurrentPoint;
+				DataBuf[ CurrentPoint.y * nWidth + CurrentPoint.x - 1 ] = DataBuf[ CurrentPoint.y * nWidth + CurrentPoint.x ] ;	// If so, mark it
+				m_vPoint[ CurrentPoint.y * nWidth + CurrentPoint.x - 1 ].bVisitedFlag = TRUE ;
+				m_vPoint[ CurrentPoint.y * nWidth + CurrentPoint.x - 1 ].ptReturnPoint = CurrentPoint ;
 
-				CurrentPoint.x--;
+				CurrentPoint.x-- ;
 
-				if (CurrentPoint.x <= 0)
+				if ( CurrentPoint.x <= 0 )
 				{
-					CurrentPoint.x = 0;
+					CurrentPoint.x = 0 ;
 				}
 
-				if (*StartX >= CurrentPoint.x)
+				if ( *StartX >= CurrentPoint.x )
 				{
-					*StartX = CurrentPoint.x;
+					*StartX = CurrentPoint.x ;
 				}
 
 				continue;
 			}
 		}
 
-		if ((CurrentPoint.x != nWidth - 1) && (DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x + 1] == 255))	// +X 방향
+		if ( ( CurrentPoint.x != nWidth - 1 ) && ( DataBuf[ CurrentPoint.y * nWidth + CurrentPoint.x + 1 ] == 255 ) )	// +X 방향
 		{
-			if (m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x + 1].bVisitedFlag == FALSE)
+			if ( m_vPoint[ CurrentPoint.y * nWidth + CurrentPoint.x + 1 ].bVisitedFlag == FALSE )
 			{
-				DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x + 1] = DataBuf[CurrentPoint.y * nWidth + CurrentPoint.x];	// if so, mark it
-				m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x + 1].bVisitedFlag = TRUE;
-				m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x + 1].ptReturnPoint = CurrentPoint;
-				CurrentPoint.x++;
+				DataBuf[ CurrentPoint.y * nWidth + CurrentPoint.x + 1 ] = DataBuf[ CurrentPoint.y * nWidth + CurrentPoint.x ] ;	// if so, mark it
+				m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x + 1].bVisitedFlag = TRUE ;
+				m_vPoint[CurrentPoint.y * nWidth + CurrentPoint.x + 1].ptReturnPoint = CurrentPoint ;
+				CurrentPoint.x++ ;
 
-				if (CurrentPoint.x >= nWidth - 1)
+				if ( CurrentPoint.x >= nWidth - 1 )
 				{
-					CurrentPoint.x = nWidth - 1;
+					CurrentPoint.x = nWidth - 1 ;
 				}
 
-				if (*EndX <= CurrentPoint.x)
+				if ( *EndX <= CurrentPoint.x )
 				{
-					*EndX = CurrentPoint.x;
+					*EndX = CurrentPoint.x ;
 				}
 
 				continue;
@@ -1103,19 +1104,19 @@ int CAlgorithm::__NRFIndNeighbor(unsigned char* DataBuf, int nWidth, int nHeight
 				DataBuf	[ ( CurrentPoint.y - 1 ) * nWidth + CurrentPoint.x ] = DataBuf[ CurrentPoint.y * nWidth + CurrentPoint.x ] ;	// if so, mart it
 				m_vPoint[ ( CurrentPoint.y - 1 ) * nWidth + CurrentPoint.x ].bVisitedFlag = TRUE ;
 				m_vPoint[ ( CurrentPoint.y - 1 ) * nWidth + CurrentPoint.x ].ptReturnPoint = CurrentPoint ;
-				CurrentPoint.y--;
+				CurrentPoint.y-- ;
 
 				if ( CurrentPoint.y <= 0 )
 				{
-					CurrentPoint.y = 0;
+					CurrentPoint.y = 0 ;
 				}
 
 				if ( *StartY >= CurrentPoint.y )
 				{
-					*StartY = CurrentPoint.y;
+					*StartY = CurrentPoint.y ;
 				}
 
-				continue;
+				continue ;
 			}
 		}
 
@@ -1138,14 +1139,14 @@ int CAlgorithm::__NRFIndNeighbor(unsigned char* DataBuf, int nWidth, int nHeight
 					*EndY = CurrentPoint.y ;
 				}
 
-				continue;
+				continue ;
 			}
 		}
 
 		if ( ( CurrentPoint.x == m_vPoint[ CurrentPoint.y * nWidth + CurrentPoint.x ].ptReturnPoint.x ) &&
 			 ( CurrentPoint.y == m_vPoint[ CurrentPoint.y * nWidth + CurrentPoint.x ].ptReturnPoint.y ) )
 		{
-			break;
+			break ;
 		}
 
 		else
@@ -1154,22 +1155,22 @@ int CAlgorithm::__NRFIndNeighbor(unsigned char* DataBuf, int nWidth, int nHeight
 		}
 	}
 
-	return 0;
+	return 0 ;
 }
 
 // 영역중 실제 blob의 칼라를 가진 영역의 크기를 획득
-int CAlgorithm::__Area(unsigned char* DataBuf, int StartX, int StartY, int ENdX, int EndY, int nWidth, int nLevel)
+int CAlgorithm::__Area(unsigned char* DataBuf, int StartX, int StartY, int EndX, int EndY, int nWidth, int nLevel)
 {
-	int nArea = 0;
-	int nX, nY;
+	int nArea = 0 ;
+	int nX, nY ;
 
-	for (nY = StartY; nY < EndY; nY++)
+	for ( nY = StartY ; nY < EndY ; nY++ )
 	{
-		for (nX = StartX; nX < ENdX; nX++)
+		for ( nX = StartX ; nX < EndX ; nX++ )
 		{
-			if (DataBuf[nY * nWidth + nX] == nLevel)
+			if ( DataBuf[ nY * nWidth + nX ] == nLevel )
 			{
-				++nArea;
+				++nArea ;
 			}
 		}
 	}
@@ -1180,107 +1181,107 @@ int CAlgorithm::__Area(unsigned char* DataBuf, int StartX, int StartY, int ENdX,
 void CAlgorithm::HCVLabeling(void)
 {
 	// Original Image Load & Show
-	CvvImage cvOriginalImg;
-	IplImage* pOriginalImg;
-	pOriginalImg = cvLoadImage("OriginalImg4.jpg");
-	IplImage* pReOriginalImg = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3);
+	CvvImage cvOriginalImg ;
+	IplImage* pOriginalImg ;
+	pOriginalImg = cvLoadImage("OriginalImg4.jpg") ;
+	IplImage* pReOriginalImg = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3) ;
 
-	cvResize(pOriginalImg, pReOriginalImg);
+	cvResize(pOriginalImg, pReOriginalImg) ;
 
-	cvOriginalImg.CopyOf(pReOriginalImg, pReOriginalImg->nChannels / 3);
-	cvOriginalImg.Show(m_pOriginalDC->m_hDC, 0, 0, cvOriginalImg.Width(), cvOriginalImg.Height() );
-	cvOriginalImg.Destroy();
+	cvOriginalImg.CopyOf(pReOriginalImg, pReOriginalImg->nChannels / 3) ;
+	cvOriginalImg.Show(m_pOriginalDC->m_hDC, 0, 0, cvOriginalImg.Width(), cvOriginalImg.Height() ) ;
+	cvOriginalImg.Destroy() ;
 
-	cvReleaseImage(&pReOriginalImg);
+	cvReleaseImage(&pReOriginalImg) ;
 
 	// Color Extraction Part
-	CvvImage cvProcess1Img, cvProcess2Img, cvProcess3Img;
-	IplImage* pReProcess1Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1);
-	IplImage* pReProcess2Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3);
-	IplImage* pRedImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1);
-	IplImage* pGreenImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1);
-	IplImage* pBlueImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1);
-	IplImage* pExtractionImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1);
+	CvvImage cvProcess1Img, cvProcess2Img, cvProcess3Img ;
+	IplImage* pReProcess1Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1) ;
+	IplImage* pReProcess2Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3) ;
+	IplImage* pRedImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1) ;
+	IplImage* pGreenImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1) ;
+	IplImage* pBlueImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1) ;
+	IplImage* pExtractionImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1) ;
 
 	// 채널 분리
-	cvSplit(pOriginalImg, pRedImg, pGreenImg, pBlueImg, NULL);
+	cvSplit(pOriginalImg, pRedImg, pGreenImg, pBlueImg, NULL) ;
 
 	// 색 추출
-	int nWidth = pOriginalImg->width;
-	int nHeight = pOriginalImg->height;
+	int nWidth = pOriginalImg->width ;
+	int nHeight = pOriginalImg->height ;
 
-	for (int y = 9; y < nHeight; ++y)
+	for ( int y = 0 ; y < nHeight ; ++y )
 	{
-		for (int x = 0; x < nWidth; ++x)
+		for ( int x = 0 ; x < nWidth ; ++x )
 		{
-			if ( ( pRedImg->imageData[ x + y * nWidth ]	>= m_nSelect1RgbData[0] &&
-				pRedImg->imageData[ x + y * nWidth ]	<= m_nSelect1RgbData[1] ) &&
-				( pGreenImg->imageData[ x + y * nWidth ]>= m_nSelect1RgbData[2] &&
-				pGreenImg->imageData[ x + y * nWidth ]	<= m_nSelect1RgbData[3] ) &&
-				( pBlueImg->imageData[ x + y * nWidth ]	<= m_nSelect1RgbData[5] ) )
+			if ( (	pRedImg->imageData	[ x + y * nWidth ]	>=	m_nSelect1RgbData[0] &&
+					pRedImg->imageData	[ x + y * nWidth ]	<=	m_nSelect1RgbData[1] ) &&
+				(	pGreenImg->imageData[ x + y * nWidth ]	>=	m_nSelect1RgbData[2] &&
+					pGreenImg->imageData[ x + y * nWidth ]	<=	m_nSelect1RgbData[3] ) &&
+				(	pBlueImg->imageData	[ x + y * nWidth ]	>=	m_nSelect1RgbData[4] &&
+					pBlueImg->imageData	[ x + y * nWidth ]	<=	m_nSelect1RgbData[5] ) )
 			{
-				pExtractionImg->imageData[x + y * nWidth] = (BYTE)0;
+				pExtractionImg->imageData[x + y * nWidth] = (BYTE)0 ;
 			}
 
 			else
 			{
-				pExtractionImg->imageData[x + y * nWidth] = (BYTE)255;
+				pExtractionImg->imageData[x + y * nWidth] = (BYTE)255 ;
 			}
 		}
 	}
 
 	// 추출한 이미지 출력
-	cvResize(pExtractionImg, pReProcess1Img);
-	cvProcess1Img.CopyOf(pReProcess1Img, pReProcess1Img->nChannels / 3);
-	cvProcess1Img.Show(m_pProcess1DC->m_hDC, 0, 0, cvProcess1Img.Width(), cvProcess1Img.Height());
-	cvProcess1Img.Destroy();
+	cvResize( pExtractionImg, pReProcess1Img ) ;
+	cvProcess1Img.CopyOf( pReProcess1Img, pReProcess1Img->nChannels / 3 ) ;
+	cvProcess1Img.Show( m_pProcess1DC->m_hDC, 0, 0, cvProcess1Img.Width(), cvProcess1Img.Height() ) ;
+	cvProcess1Img.Destroy() ;
 
 	// Labeling
-	m_nThreshold = 100;
-	m_nBlobs = Labeling(pExtractionImg, m_nThreshold);
+	m_nThreshold = 100 ;
+	m_nBlobs = Labeling(pExtractionImg, m_nThreshold) ;
 
-	for (int i = 0; i < m_nBlobs; i++)
+	for ( int i = 0 ; i < m_nBlobs ; i++ )
 	{
-		CvPoint pt1 = cvPoint(m_recBlobs[i].x, m_recBlobs[i].y);
-		CvPoint pt2 = cvPoint(pt1.x + m_recBlobs[i].width, pt1.y + m_recBlobs[i].height);
-		CvScalar color = cvScalar(255, 0, 0);
-		cvDrawRect(pOriginalImg, pt1, pt2, color, 2, 8, 0);
+		CvPoint pt1 = cvPoint( m_recBlobs[i].x, m_recBlobs[i].y ) ;
+		CvPoint pt2 = cvPoint( pt1.x + m_recBlobs[i].width, pt1.y + m_recBlobs[i].height ) ;
+		CvScalar color = cvScalar(255, 0, 0) ;
+		cvDrawRect(pOriginalImg, pt1, pt2, color, 2, 8, 0) ;
 
-		char s_output_result[50];
-		CvFont font;
-		sprintf(s_output_result, "(x:%02d	y:%02d)", pt1.x, pt1.y);
-		cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX | CV_FONT_ITALIC, 0.5, 0.5, 0, 1);
-		cvPutText(pOriginalImg, s_output_result, cvPoint(m_recBlobs[i].x - 5, m_recBlobs[i].y - 5), &font, cvScalar(255, 0, 0));
+		char s_output_result[50] ;
+		CvFont font ;
+		sprintf( s_output_result, "(x:%02d	y:%02d)", pt1.x, pt1.y ) ;
+		cvInitFont( &font, CV_FONT_HERSHEY_SIMPLEX | CV_FONT_ITALIC, 0.5, 0.5, 0, 1 ) ;
+		cvPutText( pOriginalImg, s_output_result, cvPoint(m_recBlobs[i].x - 5, m_recBlobs[i].y - 5), &font, cvScalar( 255, 0, 0 ) ) ;
 	}
 
 	// TXT 파일로 출력
-	FILE* savefile;
-	savefile = fopen(".\\LabelingData.txt","wb");
+	FILE* savefile ;
+	savefile = fopen(".\\LabelingData.txt","wb") ;
 
-	for (int i = 0; i < pExtractionImg->height; i++)
+	for ( int i = 0; i < pExtractionImg->height ; i++ )
 	{
-		for (int j = 0; j < pExtractionImg->width; j++)
+		for ( int j = 0; j < pExtractionImg->width ; j++ )
 		{
-			fprintf(savefile, "%d ", pExtractionImg->imageData[j + i * pExtractionImg->width]);
+			fprintf( savefile, "%d ", pExtractionImg->imageData[ j + i * pExtractionImg->width ] ) ;
 		}
-
-		fprintf(savefile, "\n");
+		fprintf( savefile, "\n" ) ;
 	}
 
-	fclose(savefile);
+	fclose( savefile ) ;
 
 	// 라벨링 이미지 출력
-	cvResize(pOriginalImg, pReProcess2Img, CV_INTER_LINEAR);
-	cvProcess2Img.CopyOf(pReProcess2Img, pReProcess2Img->nChannels / 3);
-	cvProcess2Img.Show(m_pProcess2DC->m_hDC, 0, 0, cvProcess2Img.Width(), cvProcess2Img.Height());
-	cvProcess2Img.Destroy();
+	cvResize( pOriginalImg, pReProcess2Img, CV_INTER_LINEAR ) ;
+	cvProcess2Img.CopyOf( pReProcess2Img, pReProcess2Img->nChannels / 3 ) ;
+	cvProcess2Img.Show( m_pProcess2DC->m_hDC, 0, 0, cvProcess2Img.Width(), cvProcess2Img.Height() ) ;
+	cvProcess2Img.Destroy() ;
 
-	cvReleaseImage(&pRedImg);
-	cvReleaseImage(&pGreenImg);
-	cvReleaseImage(&pBlueImg);
+	cvReleaseImage( &pRedImg ) ;
+	cvReleaseImage( &pGreenImg ) ;
+	cvReleaseImage( &pBlueImg ) ;
 	
-	cvReleaseImage(&pReProcess1Img);
-	cvReleaseImage(&pReProcess2Img);
+	cvReleaseImage( &pReProcess1Img ) ;
+	cvReleaseImage( &pReProcess2Img ) ;
 }
 
 void CAlgorithm::OCVAddsub(void)
