@@ -657,7 +657,39 @@ void CAlgorithm::ImgCalibration(void)
 
 void CAlgorithm::OCVResize(void)
 {
+	// Orignal Image Load & Show
+	CvvImage cvOriginalImg;
+	IplImage * pOriginalImg;
+	pOriginalImg = cvLoadImage("OriginalImg.jpg");
+	IplImage *pReOriginalImg = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3);
+	
+	cvResize(pOriginalImg, pReOriginalImg);
 
+	cvOriginalImg.CopyOf(pReOriginalImg, pReOriginalImg->nChannels / 3);
+	cvOriginalImg.Show(m_pOriginalDC->m_hDC, 0, 0, cvOriginalImg.Width(), cvOriginalImg.Height());
+	cvOriginalImg.Destroy();
+
+	cvReleaseImage(&pReOriginalImg);
+
+	CvvImage cvProcess1Img, cvProcess2Img, cvProcess3Img;
+	IplImage *pReProcess1Img = cvCreateImage(cvSize(1280, 960), IPL_DEPTH_8U, 3);
+	IplImage *pReProcess2Img = cvCreateImage(cvSize(160, 120), IPL_DEPTH_8U, 3);
+
+	cvResize(pOriginalImg, pReProcess1Img);
+	cvResize(pOriginalImg, pReProcess2Img);
+
+	// 확대 영상
+	cvProcess1Img.CopyOf(pReProcess1Img, pReProcess1Img->nChannels / 3);
+	cvProcess1Img.Show(m_pProcess1DC->m_hDC, 0, 0, cvProcess1Img.Width(), cvProcess1Img.Height());
+	cvProcess1Img.Destroy();
+
+	// 축소 영상
+	cvProcess2Img.CopyOf(pReProcess2Img, pReProcess2Img->nChannels / 3);
+	cvProcess2Img.Show(m_pProcess2DC->m_hDC, 0, 0, cvProcess2Img.Width(), cvProcess2Img.Height());
+	cvProcess2Img.Destroy();
+
+	cvReleaseImage(&pReProcess1Img);
+	cvReleaseImage(&pReProcess2Img);
 }
 
 void CAlgorithm::HCVResize(void)
@@ -703,6 +735,7 @@ void CAlgorithm::HCVResize(void)
 
 	cvReleaseImage(&pReProcess1Img);
 	cvReleaseImage(&pReProcess2Img);
+	cvReleaseImage(&pReProcess3Img);
 
 }
 
@@ -1024,8 +1057,8 @@ void CAlgorithm::DetectLabelingRegion(int nLabelNumber, unsigned char* DataBuf, 
 
 					if ( left	>= nX )	left	= nX ;
 					if ( right	<= nX )	right	= nX ;
-					if ( top	>= nX )	top		= nY ;
-					if ( bottom	<= nX )	bottom	= nY ;
+					if ( top	>= nY )	top		= nY ;
+					if ( bottom	<= nY )	bottom	= nY ;
 
 					m_recBlobs[ nLabelIndex - 1 ].x			= left ;
 					m_recBlobs[ nLabelIndex - 1 ].y			= top ;
