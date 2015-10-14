@@ -46,45 +46,45 @@ void CAlgorithm::OCVLoadImage(void)
 
 void CAlgorithm::HCVLoadImage(void)
 {
-	FILE *infile;
-	infile = fopen("OriginalImg.bmp", "rb");
+	FILE *infile ;
+	infile = fopen( "OriginalImg.bmp", "rb" ) ;
 
-	BITMAPFILEHEADER hf;
-	fread(&hf, sizeof(BITMAPFILEHEADER), 1, infile); // 파일헤드를읽음
-	BITMAPINFOHEADER hInfo;
-	fread(&hInfo, sizeof(BITMAPINFOHEADER), 1, infile); // 영상헤드를읽음
+	BITMAPFILEHEADER hf ;
+	fread( &hf,		sizeof(BITMAPFILEHEADER), 1, infile) ; // read file-head
+	BITMAPINFOHEADER hInfo ;
+	fread( &hInfo,	sizeof(BITMAPINFOHEADER), 1, infile) ; // read image-head
 
-	// 영상데이타를저장할메모리할당
-	BYTE *lpImg = new BYTE[hInfo.biSizeImage];
-	fread(lpImg, sizeof(char), hInfo.biSizeImage, infile);
-	fclose(infile);
+	// memory allocate for saving image data
+	BYTE *lpImg = new BYTE[ hInfo.biSizeImage ] ;
+	fread( lpImg, sizeof(char), hInfo.biSizeImage, infile ) ;
+	fclose( infile ) ;
 
 	HDC hdc = ::GetDC(hWnd);
 	LPBITMAPINFO  bitmapColorinfo = NULL;
-	bitmapColorinfo = (BITMAPINFO*)(new char[sizeof(BITMAPINFOHEADER) + 256 * sizeof(RGBQUAD)]);
-	bitmapColorinfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	bitmapColorinfo->bmiHeader.biWidth = hInfo.biWidth;
-	bitmapColorinfo->bmiHeader.biHeight = hInfo.biHeight;
-	bitmapColorinfo->bmiHeader.biPlanes = hInfo.biPlanes;
-	bitmapColorinfo->bmiHeader.biCompression = hInfo.biCompression;
-	bitmapColorinfo->bmiHeader.biBitCount = hInfo.biBitCount;
-	bitmapColorinfo->bmiHeader.biSizeImage = hInfo.biSize;
-	bitmapColorinfo->bmiHeader.biXPelsPerMeter = hInfo.biXPelsPerMeter;
-	bitmapColorinfo->bmiHeader.biYPelsPerMeter = hInfo.biYPelsPerMeter;
-	bitmapColorinfo->bmiHeader.biClrUsed = hInfo.biClrUsed;
-	bitmapColorinfo->bmiHeader.biClrImportant = hInfo.biClrImportant;
+	bitmapColorinfo = (BITMAPINFO*)(new char[sizeof(BITMAPINFOHEADER) + 256 * sizeof(RGBQUAD)]) ;
+	bitmapColorinfo->bmiHeader.biSize			= sizeof(BITMAPINFOHEADER) ;
+	bitmapColorinfo->bmiHeader.biWidth			= hInfo.biWidth ;
+	bitmapColorinfo->bmiHeader.biHeight			= hInfo.biHeight ;
+	bitmapColorinfo->bmiHeader.biPlanes			= hInfo.biPlanes ;
+	bitmapColorinfo->bmiHeader.biCompression	= hInfo.biCompression ;
+	bitmapColorinfo->bmiHeader.biBitCount		= hInfo.biBitCount ;
+	bitmapColorinfo->bmiHeader.biSizeImage		= hInfo.biSize ;
+	bitmapColorinfo->bmiHeader.biXPelsPerMeter	= hInfo.biXPelsPerMeter ;
+	bitmapColorinfo->bmiHeader.biYPelsPerMeter	= hInfo.biYPelsPerMeter ;
+	bitmapColorinfo->bmiHeader.biClrUsed		= hInfo.biClrUsed ;
+	bitmapColorinfo->bmiHeader.biClrImportant	= hInfo.biClrImportant ;
 
-	for (int j = 0; j < 256; j++)
+	for ( int j = 0 ; j < 256 ; j++ )
 	{
-		bitmapColorinfo->bmiColors[j].rgbRed = (UINT8)j;
-		bitmapColorinfo->bmiColors[j].rgbGreen = (UINT8)j;
-		bitmapColorinfo->bmiColors[j].rgbBlue = (UINT8)j;
-		bitmapColorinfo->bmiColors[j].rgbReserved = 0;
+		bitmapColorinfo->bmiColors[j].rgbRed		= (UINT8)j ;
+		bitmapColorinfo->bmiColors[j].rgbGreen		= (UINT8)j ;
+		bitmapColorinfo->bmiColors[j].rgbBlue		= (UINT8)j ;
+		bitmapColorinfo->bmiColors[j].rgbReserved	= 0 ;
 	}
 
-	::SetStretchBltMode(hdc, COLORONCOLOR);
-	::StretchDIBits(hdc, 0, 0, rectStaticClient.Width(), rectStaticClient.Height(), 0, 0, 640, 480, lpImg, bitmapColorinfo, DIB_RGB_COLORS, SRCCOPY);
-	::ReleaseDC(hWnd, hdc);
+	::SetStretchBltMode( hdc, COLORONCOLOR ) ;
+	::StretchDIBits( hdc, 0, 0, rectStaticClient.Width(), rectStaticClient.Height(), 0, 0, 640, 480, lpImg, bitmapColorinfo, DIB_RGB_COLORS, SRCCOPY ) ;
+	::ReleaseDC( hWnd, hdc ) ;
 }
 
 void CAlgorithm::OCVThreshold(void)
@@ -910,26 +910,24 @@ int CAlgorithm::Labeling(IplImage* image, int nThreshold)
 
 	int nNumber ;
 
-	int nWidth = image->width ;
-	int nHeight = image->height ;
+	int nWidth	= image->width ;
+	int nHeight	= image->height ;
 
 	unsigned char* tmpBuf = new unsigned char[ nWidth * nHeight ] ;
 
-	int i, j ;
-
-	for ( j = 0 ; j < nHeight ; j++ )
+	for ( int j = 0 ; j < nHeight ; j++ )
 	{
-		for ( i = 0; i < nWidth ; i++ )
-		{
+		for ( int i = 0; i < nWidth ; i++ )
+		{ 
 			tmpBuf[ j * nWidth + i ] = (unsigned char)image->imageData[ j * image->widthStep + i ] ;
 		}
 	}
 
-	// 레이블링을 위한 포인트 초기화
+	// point initializing for labeling
 	InitvPoint( nWidth, nHeight ) ;
-	// 레이블링
+	// labeling
 	nNumber = _Labeling( tmpBuf, nWidth, nHeight, nThreshold ) ;
-	// 포인트 메모리 해제
+	// delete point memory
 	DeletevPoint() ;
 
 	if ( nNumber != _DEF_MAX_BLOBS )
@@ -942,9 +940,9 @@ int CAlgorithm::Labeling(IplImage* image, int nThreshold)
 		DetectLabelingRegion( nNumber, tmpBuf, nWidth, nHeight ) ;
 	}
 
-	for ( j = 0 ; j < nHeight ; j++ )
+	for ( int j = 0 ; j < nHeight ; j++ )
 	{
-		for ( i = 0 ; i < nWidth ; i++)
+		for ( int i = 0 ; i < nWidth ; i++)
 		{
 			image->imageData[ j * image->widthStep + i ] = tmpBuf[ j * nWidth + i ] ;
 		}
@@ -959,7 +957,7 @@ void CAlgorithm::DeletevPoint()
 	delete m_vPoint;
 }
 
-void CAlgorithm::InitvPoint(int nWidth, int nHeight)
+void CAlgorithm::InitvPoint( int nWidth, int nHeight )
 {
 	int nX, nY ;
 
@@ -978,7 +976,7 @@ void CAlgorithm::InitvPoint(int nWidth, int nHeight)
 
 // Size가 nWidth이고 nHeight인 DataBuf에서
 // nThreshold보다 작은 영역을 제외한 나머지를 blob으로 획득
-int CAlgorithm::_Labeling(unsigned char* DataBuf, int nWidth, int nHeight, int nThreshold)
+int CAlgorithm::_Labeling( unsigned char* DataBuf, int nWidth, int nHeight, int nThreshold )
 {
 	int Index = 0, num = 0 ;
 	int nX, nY, k, l ;
@@ -1229,12 +1227,12 @@ void CAlgorithm::HCVLabeling(void)
 
 	// Color Extraction Part
 	CvvImage cvProcess1Img, cvProcess2Img, cvProcess3Img ;
-	IplImage* pReProcess1Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1) ;
-	IplImage* pReProcess2Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3) ;
-	IplImage* pRedImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1) ;
-	IplImage* pGreenImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1) ;
-	IplImage* pBlueImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1) ;
-	IplImage* pExtractionImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1) ;
+	IplImage* pReProcess1Img	= cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1) ;
+	IplImage* pReProcess2Img	= cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3) ;
+	IplImage* pRedImg			= cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1) ;
+	IplImage* pGreenImg			= cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1) ;
+	IplImage* pBlueImg			= cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1) ;
+	IplImage* pExtractionImg	= cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1) ;
 
 	// 채널 분리
 	cvSplit(pOriginalImg, pRedImg, pGreenImg, pBlueImg, NULL) ;
@@ -1272,14 +1270,14 @@ void CAlgorithm::HCVLabeling(void)
 
 	// Labeling
 	m_nThreshold = 100 ;
-	m_nBlobs = Labeling(pExtractionImg, m_nThreshold) ;
+	m_nBlobs = Labeling( pExtractionImg, m_nThreshold ) ;
 
 	for ( int i = 0 ; i < m_nBlobs ; i++ )
 	{
 		CvPoint pt1 = cvPoint( m_recBlobs[i].x, m_recBlobs[i].y ) ;
 		CvPoint pt2 = cvPoint( pt1.x + m_recBlobs[i].width, pt1.y + m_recBlobs[i].height ) ;
-		CvScalar color = cvScalar(255, 0, 0) ;
-		cvDrawRect(pOriginalImg, pt1, pt2, color, 2, 8, 0) ;
+		CvScalar color = cvScalar( 255, 0, 0 ) ;
+		cvDrawRect( pOriginalImg, pt1, pt2, color, 2, 8, 0 ) ;
 
 		char s_output_result[50] ;
 		CvFont font ;
@@ -1287,6 +1285,22 @@ void CAlgorithm::HCVLabeling(void)
 		cvInitFont( &font, CV_FONT_HERSHEY_SIMPLEX | CV_FONT_ITALIC, 0.5, 0.5, 0, 1 ) ;
 		cvPutText( pOriginalImg, s_output_result, cvPoint(m_recBlobs[i].x - 5, m_recBlobs[i].y - 5), &font, cvScalar( 255, 0, 0 ) ) ;
 	}
+	
+	CvMemStorage* storage = cvCreateMemStorage(0);
+	CvSeq* Circles = cvHoughCircles(pExtractionImg, storage, CV_HOUGH_GRADIENT, 1, 100, 200, 25, 30, 50);
+	int cnt1 = Circles->total;
+	int cnt2 = Circles->elem_size;
+	int cnt3 = Circles->flags;
+
+	
+	float* circle_x = (float*)cvGetSeqElem(Circles, 1);
+	float* circle_y = (float*)cvGetSeqElem(Circles, 2);
+	float* circle_r = (float*)cvGetSeqElem(Circles, 3);
+
+	//cvCircle(pOriginalImg, cvPoint(cvRound(*circle_x), cvRound(*circle_y)), cvRound(*circle_r), CV_RGB(255, 0, 0), 3, 8, 0);
+
+	CvPoint pt3 = cvPoint(m_recBlobs[1].x + m_recBlobs[1].width / 2, m_recBlobs[1].y + m_recBlobs[1].height / 2);
+	cvCircle(pOriginalImg, pt3, m_recBlobs[1].width / 2, CV_RGB(0xFF, 0, 0), 4);
 
 	// TXT 파일로 출력
 	FILE* savefile ;
