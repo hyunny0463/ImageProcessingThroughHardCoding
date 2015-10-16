@@ -1284,23 +1284,44 @@ void CAlgorithm::HCVLabeling(void)
 		sprintf( s_output_result, "(x:%02d	y:%02d)", pt1.x, pt1.y ) ;
 		cvInitFont( &font, CV_FONT_HERSHEY_SIMPLEX | CV_FONT_ITALIC, 0.5, 0.5, 0, 1 ) ;
 		cvPutText( pOriginalImg, s_output_result, cvPoint(m_recBlobs[i].x - 5, m_recBlobs[i].y - 5), &font, cvScalar( 255, 0, 0 ) ) ;
+
+		CvPoint center = cvPoint((pt2.x + pt1.x) / 2, (pt2.y + pt1.y) / 2) ;
+		int rad = (center.x - pt1.x) ;
+		int rad2 = rad * rad ;
+		int cnt1 = 0, cnt2 = 0 ;
+		char compare = (BYTE)255;
+		CvScalar color1 = cvScalar(0, 0, 255);
+
+		cvResize(pReProcess1Img, pExtractionImg);
+
+		for ( int y = pt1.y ; y < pt2.y ; y++ )
+		{
+			for (int x = pt1.x ; x < pt2.x ; x++ )
+			{
+				if ((center.x - x) * (center.x - x) + (center.y - y) * (center.y - y) > rad2 + 64 )
+				{
+					if (pExtractionImg->imageData[x + y * pExtractionImg->width] == compare)
+					{
+						cnt1++;
+					}
+				}
+
+				if ((center.x - x) * (center.x - x) + (center.y - y) * (center.y - y) < rad2)
+				{
+					if (pExtractionImg->imageData[x + y * pExtractionImg->width] == 0)
+					{
+						cnt2++;
+					}
+				}				
+			}
+		}
+
+		if (cnt1 < 50 && cnt2 < 50)
+		{
+			cvCircle(pOriginalImg, center, rad, color1, 2, 8, 0);
+		}
+
 	}
-	
-	CvMemStorage* storage = cvCreateMemStorage(0);
-	CvSeq* Circles = cvHoughCircles(pExtractionImg, storage, CV_HOUGH_GRADIENT, 1, 100, 200, 25, 30, 50);
-	int cnt1 = Circles->total;
-	int cnt2 = Circles->elem_size;
-	int cnt3 = Circles->flags;
-
-	
-	float* circle_x = (float*)cvGetSeqElem(Circles, 1);
-	float* circle_y = (float*)cvGetSeqElem(Circles, 2);
-	float* circle_r = (float*)cvGetSeqElem(Circles, 3);
-
-	//cvCircle(pOriginalImg, cvPoint(cvRound(*circle_x), cvRound(*circle_y)), cvRound(*circle_r), CV_RGB(255, 0, 0), 3, 8, 0);
-
-	CvPoint pt3 = cvPoint(m_recBlobs[1].x + m_recBlobs[1].width / 2, m_recBlobs[1].y + m_recBlobs[1].height / 2);
-	cvCircle(pOriginalImg, pt3, m_recBlobs[1].width / 2, CV_RGB(0xFF, 0, 0), 4);
 
 	// TXT 파일로 출력
 	FILE* savefile ;
@@ -1329,6 +1350,8 @@ void CAlgorithm::HCVLabeling(void)
 	
 	cvReleaseImage( &pReProcess1Img ) ;
 	cvReleaseImage( &pReProcess2Img ) ;
+
+	cvReleaseImage( &pExtractionImg ) ;
 }
 
 void CAlgorithm::OCVAddsub(void)
