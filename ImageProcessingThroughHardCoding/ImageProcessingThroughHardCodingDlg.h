@@ -57,4 +57,7 @@ public:
 	afx_msg void OnBnClickedHclabeling();
 	afx_msg void OnBnClickedCvaddsub();
 	afx_msg void OnBnClickedHcaddsub();
+	afx_msg void OnBnClickedCvedgedetect();
+	afx_msg void OnBnClickedHcedgedetect();
+	afx_msg void OnBnClickedCvcornerdet();
 };

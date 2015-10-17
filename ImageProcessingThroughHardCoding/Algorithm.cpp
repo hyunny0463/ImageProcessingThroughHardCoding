@@ -1513,3 +1513,239 @@ void CAlgorithm::ImgSub(IplImage* pScr1Img, IplImage* pScr2Img, IplImage* pDstIm
 		}
 	}
 }
+
+void CAlgorithm::OCVEdgeDetection(void)
+{
+	// Original Image Load & Show
+	CvvImage cvOriginalImg ;
+	IplImage *pOriginalImg ;
+	pOriginalImg = cvLoadImage("OriginalImg4.jpg") ;
+	IplImage *pReOriginalImg = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1) ;
+	IplImage *pBinOriginalImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1) ;
+
+	cvCvtColor(pOriginalImg, pBinOriginalImg, CV_RGB2GRAY);
+	cvThreshold(pBinOriginalImg, pBinOriginalImg, 115, 255, CV_THRESH_BINARY);
+
+	// binary image print
+	cvResize(pBinOriginalImg, pReOriginalImg);
+	cvOriginalImg.CopyOf(pReOriginalImg, pReOriginalImg->nChannels / 3);
+	cvOriginalImg.Show(m_pOriginalDC->m_hDC, 0, 0, cvOriginalImg.Width(), cvOriginalImg.Height());
+	cvOriginalImg.Destroy();
+
+	cvReleaseImage(&pReOriginalImg);
+
+	// extract edge
+	CvvImage cvProcess1Img, cvProcess2Img;
+	IplImage *pVerticalEdgeImg = cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_32F, 1);
+	IplImage *pHorizontalEdgeImg = cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_32F, 1);
+	IplImage *pReVerticalEdgeImg = cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_8U, 1);
+	IplImage *pReHorizontalEdgeImg = cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_8U, 1);
+	IplImage *pReProcess1Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1);
+	IplImage *pReProcess2Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1);
+
+	cvSobel(pBinOriginalImg, pVerticalEdgeImg, 1, 0, 3);
+	cvSobel(pBinOriginalImg, pHorizontalEdgeImg, 0, 1, 3);
+
+	cvConvertScaleAbs(pVerticalEdgeImg, pReVerticalEdgeImg, 1, 0);
+	cvConvertScaleAbs(pHorizontalEdgeImg, pReHorizontalEdgeImg, 1, 0);
+
+	// printing edge extracted image
+	cvResize(pReVerticalEdgeImg, pReProcess1Img);
+	cvProcess1Img.CopyOf(pReProcess1Img, pReProcess1Img->nChannels / 3);
+	cvProcess1Img.Show(m_pProcess1DC->m_hDC, 0, 0, cvProcess1Img.Width(), cvProcess1Img.Height());
+	cvProcess1Img.Destroy();
+
+	cvResize(pReHorizontalEdgeImg, pReProcess2Img, CV_INTER_LINEAR);
+	cvProcess2Img.CopyOf(pReProcess2Img, pReProcess2Img->nChannels / 3);
+	cvProcess2Img.Show(m_pProcess2DC->m_hDC, 0, 0, cvProcess2Img.Width(), cvProcess2Img.Height());
+	cvProcess2Img.Destroy();
+
+	cvReleaseImage(&pReProcess1Img);
+	cvReleaseImage(&pReProcess2Img);
+	cvReleaseImage(&pVerticalEdgeImg);
+	cvReleaseImage(&pHorizontalEdgeImg);
+
+	// summing image
+	CvvImage cvProcess3Img;
+	IplImage *pReProcess3Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1);
+	IplImage *pEdgeDetectionImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1);
+
+	cvAdd(pReVerticalEdgeImg, pReHorizontalEdgeImg, pEdgeDetectionImg, NULL);
+
+	// print summing image
+	cvResize(pEdgeDetectionImg, pReProcess3Img, CV_INTER_LINEAR);
+	cvProcess3Img.CopyOf(pReProcess3Img, pReProcess3Img->nChannels / 3);
+	cvProcess3Img.Show(m_pProcess3DC->m_hDC, 0, 0, cvProcess3Img.Width(), cvProcess3Img.Height());
+	cvProcess3Img.Destroy();
+
+	cvReleaseImage(&pBinOriginalImg);
+	cvReleaseImage(&pReProcess3Img);
+	cvReleaseImage(&pEdgeDetectionImg);
+}
+
+void CAlgorithm::HCVEdgeDetection(void)
+{
+	// Original Image Load & Show
+	CvvImage cvOriginalImg;
+	IplImage *pOriginalImg;
+	pOriginalImg = cvLoadImage("OriginalImg4.jpg");
+	IplImage *pReOriginalImg = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1);
+	IplImage *pBinOriginalImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1);
+
+	cvCvtColor(pOriginalImg, pBinOriginalImg, CV_RGB2GRAY);
+	cvThreshold(pBinOriginalImg, pBinOriginalImg, 115, 255, CV_THRESH_BINARY);
+
+	// print binary image
+	cvResize(pBinOriginalImg, pReOriginalImg);
+	cvOriginalImg.CopyOf(pReOriginalImg, pReOriginalImg->nChannels / 3);
+	cvOriginalImg.Show(m_pOriginalDC->m_hDC, 0, 0, cvOriginalImg.Width(), cvOriginalImg.Height());
+	cvOriginalImg.Destroy();
+
+	cvReleaseImage(&pReOriginalImg);
+
+	// extract edge
+	CvvImage cvProcess1Img, cvProcess2Img, cvProcess3Img; 
+	IplImage *pEdgeDetectionImg = cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_8U, 1);
+	IplImage *pVerticalEdgeImg = cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_8U, 1);
+	IplImage *pHorizontalEdgeImg = cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_8U, 1);
+	IplImage *pReProcess1Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1);
+	IplImage *pReProcess2Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1);
+	IplImage *pReProcess3Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1);
+
+	int vertical_mask[3][3]		= { { -1,  0,  1}, { -2, 0, 2 }, { -1, 0, 1 } }; // vertically
+	int horizontal_mask[3][3]	= { { -1, -2, -1}, {  0, 0, 0 }, {  1, 2, 1 } }; // horizontally
+	int nHeight = pBinOriginalImg->height;
+	int nWidth = pBinOriginalImg->width;
+
+	for (int y = 0; y < nHeight; y++)
+	{
+		for (int x = 0; x < nWidth; x++)
+		{
+			if (x <= 0 || x >= nWidth - 1 || y <= 0 || y >= nHeight - 1)
+			{
+				pEdgeDetectionImg->imageData[y * nWidth + x] = 0;
+			}
+			else
+			{
+				int nGx = (BYTE)pBinOriginalImg->imageData[(y - 1)*nWidth + (x - 1)] * horizontal_mask[0][0] +
+						  (BYTE)pBinOriginalImg->imageData[(y    )*nWidth + (x - 1)] * horizontal_mask[0][1] +
+						  (BYTE)pBinOriginalImg->imageData[(y + 1)*nWidth + (x - 1)] * horizontal_mask[0][2] +
+						  (BYTE)pBinOriginalImg->imageData[(y - 1)*nWidth + (x    )] * horizontal_mask[1][0] +
+						  (BYTE)pBinOriginalImg->imageData[(y    )*nWidth + (x    )] * horizontal_mask[1][1] +
+						  (BYTE)pBinOriginalImg->imageData[(y + 1)*nWidth + (x    )] * horizontal_mask[1][2] +
+						  (BYTE)pBinOriginalImg->imageData[(y - 1)*nWidth + (x + 1)] * horizontal_mask[2][0] +
+						  (BYTE)pBinOriginalImg->imageData[(y    )*nWidth + (x + 1)] * horizontal_mask[2][1] +
+						  (BYTE)pBinOriginalImg->imageData[(y + 1)*nWidth + (x + 1)] * horizontal_mask[2][2] ;
+				
+				int nGy = (BYTE)pBinOriginalImg->imageData[(y - 1)*nWidth + (x - 1)] * vertical_mask[0][0] +
+						  (BYTE)pBinOriginalImg->imageData[(y    )*nWidth + (x - 1)] * vertical_mask[0][1] +
+						  (BYTE)pBinOriginalImg->imageData[(y + 1)*nWidth + (x - 1)] * vertical_mask[0][2] +
+						  (BYTE)pBinOriginalImg->imageData[(y - 1)*nWidth + (x    )] * vertical_mask[1][0] +
+						  (BYTE)pBinOriginalImg->imageData[(y    )*nWidth + (x    )] * vertical_mask[1][1] +
+						  (BYTE)pBinOriginalImg->imageData[(y + 1)*nWidth + (x    )] * vertical_mask[1][2] +
+						  (BYTE)pBinOriginalImg->imageData[(y - 1)*nWidth + (x + 1)] * vertical_mask[2][0] +
+						  (BYTE)pBinOriginalImg->imageData[(y    )*nWidth + (x + 1)] * vertical_mask[2][1] +
+						  (BYTE)pBinOriginalImg->imageData[(y + 1)*nWidth + (x + 1)] * vertical_mask[2][2] ;
+
+				pVerticalEdgeImg->	imageData[y * nWidth + x] = (BYTE)(abs(nGx));
+				pHorizontalEdgeImg->imageData[y * nWidth + x] = (BYTE)(abs(nGy));
+				pEdgeDetectionImg->	imageData[y * nWidth + x] = (BYTE)(abs(nGx) + abs(nGy));
+			}
+		}
+	}
+
+	// print edge extracted image
+	cvResize(pVerticalEdgeImg, pReProcess1Img, CV_INTER_LINEAR);
+	cvProcess1Img.CopyOf(pReProcess1Img, pReProcess1Img->nChannels / 3);
+	cvProcess1Img.Show(m_pProcess1DC->m_hDC, 0, 0, cvProcess1Img.Width(), cvProcess1Img.Height());
+	cvProcess1Img.Destroy();
+
+	cvResize(pHorizontalEdgeImg, pReProcess2Img, CV_INTER_LINEAR);
+	cvProcess2Img.CopyOf(pReProcess2Img, pReProcess2Img->nChannels / 3);
+	cvProcess2Img.Show(m_pProcess2DC->m_hDC, 0, 0, cvProcess2Img.Width(), cvProcess2Img.Height());
+	cvProcess2Img.Destroy();
+
+	// 합친 이미지 출력
+	cvResize( pEdgeDetectionImg, pReProcess3Img, CV_INTER_LINEAR);
+	cvProcess3Img.CopyOf(pReProcess3Img, pReProcess3Img->nChannels / 3);
+	cvProcess3Img.Show(m_pProcess3DC->m_hDC, 0, 0, cvProcess3Img.Width(), cvProcess3Img.Height());
+	cvProcess3Img.Destroy();
+
+	cvReleaseImage(&pOriginalImg);
+	cvReleaseImage(&pReProcess1Img);
+	cvReleaseImage(&pReProcess2Img);
+	cvReleaseImage(&pReProcess3Img);
+	cvReleaseImage(&pBinOriginalImg);
+	cvReleaseImage(&pEdgeDetectionImg);
+	cvReleaseImage(&pVerticalEdgeImg);
+	cvReleaseImage(&pHorizontalEdgeImg);
+}
+
+void CAlgorithm::OCVCornerDetection(void)
+{
+	// Original Image Load & Show
+	CvvImage cvOriginalImg;
+	IplImage *pOriginalImg;
+	pOriginalImg = cvLoadImage("OriginalImg4.jpg");
+	IplImage *pReOriginalImg = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1);
+	IplImage *pBinOriginalImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1);
+
+	cvCvtColor(pOriginalImg, pBinOriginalImg, CV_RGB2GRAY);
+
+	// print GRAY image
+	cvResize(pBinOriginalImg, pReOriginalImg);
+	cvOriginalImg.CopyOf(pReOriginalImg, pReOriginalImg->nChannels / 3);
+	cvOriginalImg.Show(m_pOriginalDC->m_hDC, 0, 0, cvOriginalImg.Width(), cvOriginalImg.Height());
+	cvOriginalImg.Destroy();
+
+	cvReleaseImage(&pReOriginalImg);
+
+	// Harris Corner
+	CvvImage cvProcess1Img, cvProcess2Img;
+	IplImage *pHarrisCornerImg = cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_32F, 1);
+	IplImage *pHarrisCorner2Img = cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_32F, 1);
+	IplImage *pReHarrisCornerImg = cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_8U, 1);
+	IplImage *pTempImg = cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_32F, 1);
+	IplImage *pReProcess1Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_32F, 1);
+	IplImage *pReProcess2Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3);
+
+	cvCornerHarris(pBinOriginalImg, pHarrisCornerImg, 5, 7, 0.04);
+
+	// printHarris Corner image
+	cvResize(pHarrisCornerImg, pReProcess1Img);
+	cvProcess1Img.CopyOf(pReProcess1Img, pReProcess1Img->nChannels / 3);
+	cvProcess1Img.Show(m_pProcess1DC->m_hDC, 0, 0, cvProcess1Img.Width(), cvProcess1Img.Height());
+	cvProcess1Img.Destroy();
+
+	// Harris Corner #2
+	int nCvGoodFeaturesToTrackCount = 0;
+	CvPoint2D32f* corners;
+	corners = new CvPoint2D32f[500];
+	nCvGoodFeaturesToTrackCount = 150;
+
+	// 영상에서 강력한 코너 지점을 결정하는 함수
+	cvGoodFeaturesToTrack(pBinOriginalImg, pHarrisCorner2Img, pTempImg, corners, &nCvGoodFeaturesToTrackCount, 0.1, 15, NULL, 5, 1, 0.04);
+
+	// 코너의 위치를 재정의 함
+	cvFindCornerSubPix(pBinOriginalImg, corners, nCvGoodFeaturesToTrackCount, cvSize(3, 3), cvSize(-1, -1), cvTermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 20, 0.03));
+
+	// print coordinate
+	for (int i = 0; i < nCvGoodFeaturesToTrackCount; i++)
+	{
+		cvCircle(pOriginalImg, cvPointFrom32f(corners[i]), 3, CV_RGB(0, 0, 255), 2) ;
+	}
+
+	cvResize(pOriginalImg, pReProcess2Img, CV_INTER_LINEAR);
+	cvProcess2Img.CopyOf(pReProcess2Img, pReProcess2Img->nChannels / 3);
+	cvProcess2Img.Show(m_pProcess2DC->m_hDC, 0, 0, cvProcess2Img.Width(), cvProcess2Img.Height() ) ;
+	cvProcess2Img.Destroy();
+
+	cvReleaseImage(&pOriginalImg);
+	cvReleaseImage(&pReProcess1Img);
+	cvReleaseImage(&pReProcess2Img);
+	cvReleaseImage(&pHarrisCornerImg);
+	cvReleaseImage(&pBinOriginalImg);
+	cvReleaseImage(&pHarrisCorner2Img);
+	cvReleaseImage(&pReHarrisCornerImg);
+	cvReleaseImage(&pTempImg);
+}

@@ -34,6 +34,8 @@ public:
 	void OCVColorExtraction(void);
 	void OCVResize(void);
 	void OCVAddsub(void);
+	void OCVEdgeDetection(void);
+	void OCVCornerDetection(void);
 
 	void HCVLoadImage(void);
 	void HCVGrayImage(void);
@@ -43,6 +45,7 @@ public:
 	void HCVResize(void);
 	void HCVLabeling(void);
 	void HCVAddsub(void);
+	void HCVEdgeDetection(void);
 
 	double round(double num);
 	int Labeling(IplImage* image, int nThreshold);

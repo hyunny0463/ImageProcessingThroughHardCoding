@@ -93,6 +93,9 @@ BEGIN_MESSAGE_MAP(CImageProcessingThroughHardCodingDlg, CDialogEx)
 	ON_BN_CLICKED(Hclabeling, &CImageProcessingThroughHardCodingDlg::OnBnClickedHclabeling)
 	ON_BN_CLICKED(Cvaddsub, &CImageProcessingThroughHardCodingDlg::OnBnClickedCvaddsub)
 	ON_BN_CLICKED(Hcaddsub, &CImageProcessingThroughHardCodingDlg::OnBnClickedHcaddsub)
+	ON_BN_CLICKED(Cvedgedetect, &CImageProcessingThroughHardCodingDlg::OnBnClickedCvedgedetect)
+	ON_BN_CLICKED(Hcedgedetect, &CImageProcessingThroughHardCodingDlg::OnBnClickedHcedgedetect)
+	ON_BN_CLICKED(Cvcornerdet, &CImageProcessingThroughHardCodingDlg::OnBnClickedCvcornerdet)
 END_MESSAGE_MAP()
 
 
@@ -367,4 +370,25 @@ void CImageProcessingThroughHardCodingDlg::OnBnClickedHcaddsub()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	Algorithm.HCVAddsub();
+}
+
+
+void CImageProcessingThroughHardCodingDlg::OnBnClickedCvedgedetect()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	Algorithm.OCVEdgeDetection();
+}
+
+
+void CImageProcessingThroughHardCodingDlg::OnBnClickedHcedgedetect()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	Algorithm.HCVEdgeDetection();
+}
+
+
+void CImageProcessingThroughHardCodingDlg::OnBnClickedCvcornerdet()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	Algorithm.OCVCornerDetection();
 }
