@@ -60,4 +60,5 @@ public:
 	afx_msg void OnBnClickedCvedgedetect();
 	afx_msg void OnBnClickedHcedgedetect();
 	afx_msg void OnBnClickedCvcornerdet();
+	afx_msg void OnBnClickedhomework();
 };

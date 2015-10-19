@@ -59,6 +59,8 @@ public:
 	void ImgAdd(IplImage* pSrc1Img, IplImage* pSrc2Img, IplImage* pDstImg) ;
 	void ImgSub(IplImage* pSrc1Img, IplImage* pSrc2Img, IplImage* pDstImg) ;
 
+	void Homework(void);
+
 	IplImage *Histogram(IplImage *pOriginalImg);
 	IplImage *ImgZoom(IplImage *pOriginalImg, float fZoomInFactor);
 

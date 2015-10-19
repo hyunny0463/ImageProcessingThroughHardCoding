@@ -1749,3 +1749,157 @@ void CAlgorithm::OCVCornerDetection(void)
 	cvReleaseImage(&pReHarrisCornerImg);
 	cvReleaseImage(&pTempImg);
 }
+
+void CAlgorithm::Homework(void)
+{
+	CvvImage cvOriginalImg, cvProcess1Img, cvProcess2Img, cvProcess3Img ;
+	IplImage* pOriginalImg;
+	IplImage* pReOriginalImg	= cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3 ) ;
+	IplImage* pReProcess1Img	= cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1 ) ;
+	IplImage* pReProcess2Img	= cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3 ) ;
+	IplImage* pReProcess3Img	= cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3 ) ;
+	IplImage* pRedImg			= cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1 ) ;
+	IplImage* pGreenImg			= cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1 ) ;
+	IplImage* pBlueImg			= cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1 ) ;
+	IplImage* pExtractionImg	= cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1 ) ;
+	IplImage* pBinOriginalImg	= cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1 ) ;
+	IplImage* pHarrisCornerImg	= cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_32F, 1 ) ;
+	IplImage* pHarrisCorner2Img	= cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_32F, 1 ) ;
+	IplImage* pReHarrisCornerImg= cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_8U , 1 ) ;
+	IplImage* pTempImg			= cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_32F, 1 ) ;
+
+	pOriginalImg = cvLoadImage("OriginalImg4.jpg");
+	cvCvtColor(pOriginalImg, pBinOriginalImg, CV_RGB2GRAY ) ;
+	cvCornerHarris(pBinOriginalImg, pHarrisCornerImg, 5, 7, 0.04 ) ;
+
+	cvResize(pOriginalImg, pReOriginalImg ) ;
+
+	cvOriginalImg.CopyOf(pReOriginalImg, pReOriginalImg->nChannels / 3 ) ;
+	cvOriginalImg.Show(m_pOriginalDC->m_hDC, 0, 0, cvOriginalImg.Width(), cvOriginalImg.Height() ) ;
+	cvOriginalImg.Destroy() ;
+
+	cvReleaseImage(&pReOriginalImg ) ;
+
+	// 채널 분리
+	cvSplit( pOriginalImg, pRedImg, pGreenImg, pBlueImg, NULL ) ;
+
+	// 색 추출
+	int nWidth = pOriginalImg	->	width ;
+	int nHeight = pOriginalImg	->	height ;
+
+	for (int y = 0; y < nHeight; ++y )
+	{
+		for (int x = 0; x < nWidth; ++x )
+		{
+			if ( ( pRedImg	->	imageData[ x + y * nWidth ] >= m_nSelect1RgbData[0] &&
+				   pRedImg	->	imageData[ x + y * nWidth ] <= m_nSelect1RgbData[1] ) &&
+				 ( pGreenImg->	imageData[ x + y * nWidth ] >= m_nSelect1RgbData[2] &&
+				   pGreenImg->	imageData[ x + y * nWidth ] <= m_nSelect1RgbData[3] ) &&
+				 ( pBlueImg	->	imageData[ x + y * nWidth ] >= m_nSelect1RgbData[4] &&
+				   pBlueImg	->	imageData[ x + y * nWidth ] <= m_nSelect1RgbData[5] ) )
+			{
+				pExtractionImg->imageData[ x + y * nWidth ] = (BYTE)0 ;
+			}
+
+			else
+			{
+				pExtractionImg->imageData[ x + y * nWidth ] = (BYTE)255 ;
+			}
+		}
+	}
+
+	// 추출한 이미지 출력
+	cvResize(pExtractionImg, pReProcess1Img ) ;
+	cvProcess1Img.CopyOf(pReProcess1Img, pReProcess1Img->nChannels / 3 ) ;
+	cvProcess1Img.Show(m_pProcess1DC->m_hDC, 0, 0, cvProcess1Img.Width(), cvProcess1Img.Height() ) ;
+	cvProcess1Img.Destroy() ;
+
+	// Labeling
+	m_nThreshold = 100 ;
+	m_nBlobs = Labeling(pExtractionImg, m_nThreshold) ;
+
+	for (int i = 0; i < m_nBlobs; i++ )
+	{
+		CvPoint pt1 = cvPoint(m_recBlobs[i].x, m_recBlobs[i].y ) ;
+		CvPoint pt2 = cvPoint(pt1.x + m_recBlobs[i].width, pt1.y + m_recBlobs[i].height ) ;
+		CvScalar color = cvScalar(255, 0, 0 ) ;
+		cvDrawRect(pOriginalImg, pt1, pt2, color, 2, 8, 0 ) ;
+
+		char s_output_result[50] ;
+		CvFont font ;
+		sprintf(s_output_result, "(x:%02d	y:%02d)", pt1.x, pt1.y ) ;
+		cvInitFont(&font, CV_FONT_HERSHEY_SIMPLEX | CV_FONT_ITALIC, 0.5, 0.5, 0, 1 ) ;
+		cvPutText(pOriginalImg, s_output_result, cvPoint(m_recBlobs[i].x - 5, m_recBlobs[i].y - 5), &font, cvScalar(255, 0, 0) ) ;
+	}
+
+	// Harris Corner #2
+	int nCvGoodFeaturesToTrackCount = 0 ;
+	CvPoint2D32f* corners ;
+	corners = new CvPoint2D32f[500] ;
+	nCvGoodFeaturesToTrackCount = 150 ;
+
+	// 영상에서 강력한 코너 지점을 결정하는 함수
+	cvGoodFeaturesToTrack(pBinOriginalImg, pHarrisCorner2Img, pTempImg, corners, &nCvGoodFeaturesToTrackCount, 0.1, 15, NULL, 5, 1, 0.04);
+
+	// 코너의 위치를 재정의 함
+	cvFindCornerSubPix(pBinOriginalImg, corners, nCvGoodFeaturesToTrackCount, cvSize(3, 3), cvSize(-1, -1), cvTermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 20, 0.03));
+
+	// print coordinate
+	for (int i = 0; i < nCvGoodFeaturesToTrackCount; i++)
+	{
+		cvCircle( pOriginalImg, cvPointFrom32f( corners[i]), 3, CV_RGB(255, 0, 0), 2 ) ;
+	}
+
+	cvResize(pOriginalImg, pReProcess2Img, CV_INTER_LINEAR);
+	cvProcess2Img.CopyOf( pReProcess2Img, pReProcess2Img->nChannels / 3 ) ;
+	cvProcess2Img.Show( m_pProcess2DC->m_hDC, 0, 0, cvProcess2Img.Width(), cvProcess2Img.Height() ) ;
+	cvProcess2Img.Destroy() ;
+	
+	int cnt = 0;
+	CvPoint2D32f tricorner[3];
+
+	for (int i = 0; i < m_nBlobs; i++)
+	{
+		cnt = 0;
+
+		for (int j = 0; j < nCvGoodFeaturesToTrackCount; j++)
+		{
+			CvPoint pt1 = cvPoint(m_recBlobs[i].x, m_recBlobs[i].y);
+			CvPoint pt2 = cvPoint(pt1.x + m_recBlobs[i].width, pt1.y + m_recBlobs[i].height);
+
+			if ( ( pt1.x - 1 ) <= cvPointFrom32f(corners[j]).x && ( pt2.x + 1 ) >= cvPointFrom32f(corners[j]).x && ( pt1.y - 1 ) <= cvPointFrom32f(corners[j]).y && ( pt2.y + 1) >= cvPointFrom32f(corners[j]).y )
+			{
+				cnt++;
+				tricorner[0] = tricorner[1];
+				tricorner[1] = tricorner[2];
+				tricorner[2] = corners[j];
+			}
+		}
+
+		if (cnt == 3)
+		{
+			cvLine(pOriginalImg, cvPointFrom32f(tricorner[0]), cvPointFrom32f(tricorner[1]), CV_RGB(255, 255, 0), 2);
+			cvLine(pOriginalImg, cvPointFrom32f(tricorner[0]), cvPointFrom32f(tricorner[2]), CV_RGB(255, 255, 0), 2);
+			cvLine(pOriginalImg, cvPointFrom32f(tricorner[1]), cvPointFrom32f(tricorner[2]), CV_RGB(255, 255, 0), 2);
+		}
+	}
+
+	cvResize(pOriginalImg, pReProcess3Img, CV_INTER_LINEAR);
+	cvProcess3Img.CopyOf(pReProcess3Img, pReProcess3Img->nChannels / 3);
+	cvProcess3Img.Show(m_pProcess3DC->m_hDC, 0, 0, cvProcess3Img.Width(), cvProcess3Img.Height());
+	cvProcess3Img.Destroy();
+
+	
+	cvReleaseImage ( &pRedImg ) ;
+	cvReleaseImage ( &pGreenImg ) ;
+	cvReleaseImage ( &pBlueImg ) ;
+	cvReleaseImage ( &pReProcess1Img ) ;
+	cvReleaseImage ( &pReProcess2Img ) ;
+	cvReleaseImage ( &pExtractionImg ) ;
+	cvReleaseImage ( &pOriginalImg ) ;
+	cvReleaseImage ( &pHarrisCornerImg ) ;
+	cvReleaseImage ( &pBinOriginalImg ) ;
+	cvReleaseImage ( &pHarrisCorner2Img ) ;
+	cvReleaseImage ( &pReHarrisCornerImg ) ;
+	cvReleaseImage ( &pTempImg ) ;
+}
