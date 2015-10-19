@@ -1684,53 +1684,53 @@ void CAlgorithm::HCVEdgeDetection(void)
 void CAlgorithm::OCVCornerDetection(void)
 {
 	// Original Image Load & Show
-	CvvImage cvOriginalImg;
-	IplImage *pOriginalImg;
-	pOriginalImg = cvLoadImage("OriginalImg4.jpg");
-	IplImage *pReOriginalImg = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1);
-	IplImage *pBinOriginalImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1);
+	CvvImage cvOriginalImg ;
+	IplImage *pOriginalImg ;
+	pOriginalImg = cvLoadImage("OriginalImg4.jpg" ) ;
+	IplImage *pReOriginalImg  = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 1 ) ;
+	IplImage *pBinOriginalImg = cvCreateImage(cvSize(640, 480), IPL_DEPTH_8U, 1 ) ;
 
-	cvCvtColor(pOriginalImg, pBinOriginalImg, CV_RGB2GRAY);
+	cvCvtColor(pOriginalImg, pBinOriginalImg, CV_RGB2GRAY ) ;
 
 	// print GRAY image
-	cvResize(pBinOriginalImg, pReOriginalImg);
-	cvOriginalImg.CopyOf(pReOriginalImg, pReOriginalImg->nChannels / 3);
-	cvOriginalImg.Show(m_pOriginalDC->m_hDC, 0, 0, cvOriginalImg.Width(), cvOriginalImg.Height());
-	cvOriginalImg.Destroy();
+	cvResize(pBinOriginalImg, pReOriginalImg ) ;
+	cvOriginalImg.CopyOf(pReOriginalImg, pReOriginalImg->nChannels / 3 ) ;
+	cvOriginalImg.Show(m_pOriginalDC->m_hDC, 0, 0, cvOriginalImg.Width(), cvOriginalImg.Height() ) ;
+	cvOriginalImg.Destroy() ;
 
-	cvReleaseImage(&pReOriginalImg);
+	cvReleaseImage( &pReOriginalImg ) ;
 
 	// Harris Corner
-	CvvImage cvProcess1Img, cvProcess2Img;
-	IplImage *pHarrisCornerImg = cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_32F, 1);
-	IplImage *pHarrisCorner2Img = cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_32F, 1);
-	IplImage *pReHarrisCornerImg = cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_8U, 1);
-	IplImage *pTempImg = cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_32F, 1);
-	IplImage *pReProcess1Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_32F, 1);
-	IplImage *pReProcess2Img = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3);
+	CvvImage cvProcess1Img, cvProcess2Img ;
+	IplImage *pHarrisCornerImg		= cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_32F, 1 ) ;
+	IplImage *pHarrisCorner2Img		= cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_32F, 1 ) ;
+	IplImage *pReHarrisCornerImg	= cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_8U , 1 ) ;
+	IplImage *pTempImg				= cvCreateImage(cvGetSize(pBinOriginalImg), IPL_DEPTH_32F, 1 ) ;
+	IplImage *pReProcess1Img		= cvCreateImage(cvSize(320, 240), IPL_DEPTH_32F, 1 ) ;
+	IplImage *pReProcess2Img		= cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U , 3 ) ;
 
-	cvCornerHarris(pBinOriginalImg, pHarrisCornerImg, 5, 7, 0.04);
+	cvCornerHarris(pBinOriginalImg, pHarrisCornerImg, 5, 7, 0.04 ) ;
 
 	// printHarris Corner image
-	cvResize(pHarrisCornerImg, pReProcess1Img);
-	cvProcess1Img.CopyOf(pReProcess1Img, pReProcess1Img->nChannels / 3);
-	cvProcess1Img.Show(m_pProcess1DC->m_hDC, 0, 0, cvProcess1Img.Width(), cvProcess1Img.Height());
-	cvProcess1Img.Destroy();
+	cvResize(pHarrisCornerImg, pReProcess1Img ) ;
+	cvProcess1Img.CopyOf(pReProcess1Img, pReProcess1Img->nChannels / 3 ) ;
+	cvProcess1Img.Show(m_pProcess1DC->m_hDC, 0, 0, cvProcess1Img.Width(), cvProcess1Img.Height() ) ;
+	cvProcess1Img.Destroy() ;
 
 	// Harris Corner #2
-	int nCvGoodFeaturesToTrackCount = 0;
-	CvPoint2D32f* corners;
-	corners = new CvPoint2D32f[500];
-	nCvGoodFeaturesToTrackCount = 150;
+	int nCvGoodFeaturesToTrackCount = 0 ;
+	CvPoint2D32f* corners ;
+	corners = new CvPoint2D32f[500] ;
+	nCvGoodFeaturesToTrackCount = 150 ;
 
 	// 영상에서 강력한 코너 지점을 결정하는 함수
-	cvGoodFeaturesToTrack(pBinOriginalImg, pHarrisCorner2Img, pTempImg, corners, &nCvGoodFeaturesToTrackCount, 0.1, 15, NULL, 5, 1, 0.04);
+	cvGoodFeaturesToTrack(pBinOriginalImg, pHarrisCorner2Img, pTempImg, corners, &nCvGoodFeaturesToTrackCount, 0.1, 15, NULL, 5, 1, 0.04 ) ;
 
 	// 코너의 위치를 재정의 함
-	cvFindCornerSubPix(pBinOriginalImg, corners, nCvGoodFeaturesToTrackCount, cvSize(3, 3), cvSize(-1, -1), cvTermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 20, 0.03));
+	cvFindCornerSubPix(pBinOriginalImg, corners, nCvGoodFeaturesToTrackCount, cvSize(3, 3), cvSize(-1, -1), cvTermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 20, 0.03) ) ;
 
 	// print coordinate
-	for (int i = 0; i < nCvGoodFeaturesToTrackCount; i++)
+	for (int i = 0; i < nCvGoodFeaturesToTrackCount; i++ )
 	{
 		cvCircle(pOriginalImg, cvPointFrom32f(corners[i]), 3, CV_RGB(0, 0, 255), 2) ;
 	}
