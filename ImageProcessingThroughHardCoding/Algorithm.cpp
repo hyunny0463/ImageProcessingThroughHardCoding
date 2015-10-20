@@ -1318,7 +1318,7 @@ void CAlgorithm::HCVLabeling(void)
 
 		if (cnt1 < 50 && cnt2 < 50)
 		{
-			cvCircle(pOriginalImg, center, rad, color1, 2, 8, 0);
+			cvCircle(pOriginalImg, center, rad, color1, 2 ) ;	// , 8, 0);
 		}
 
 	}
