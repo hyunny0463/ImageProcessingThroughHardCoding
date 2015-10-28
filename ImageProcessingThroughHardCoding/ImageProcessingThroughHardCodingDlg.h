@@ -45,10 +45,6 @@ public:
 	afx_msg void OnBnClickedHchistogram();
 	afx_msg void OnBnClickedCvextraction();
 	afx_msg void OnNMCustomdrawRGB(NMHDR *pNMHDR, LRESULT *pResult);
-
-	CSliderCtrl m_ctrlRGB[6];
-	int *GetRgbRange(void);
-	void ColorSetting(void);
 	afx_msg void OnBnClickedHccalibration();
 	afx_msg void OnBnClickedCvresize();
 	afx_msg void OnBnClickedHcresize();
@@ -61,4 +57,29 @@ public:
 	afx_msg void OnBnClickedHcedgedetect();
 	afx_msg void OnBnClickedCvcornerdet();
 	afx_msg void OnBnClickedhomework();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnDestroy();
+	afx_msg void OnBnClickedButtonAviLoad();
+	afx_msg void OnBnClickedButtonOcvCamload();
+
+	CSliderCtrl m_ctrlRGB[6];
+	CvCapture* m_capAviView;
+	CvCapture* m_capCamView;
+
+	bool m_bAviLoadEnabled;
+	bool m_bCameraProcessFlag;
+	bool m_bCameraConnectionFlag;
+
+	CString nowTimeDisplay;
+	COleDateTime saveNowTime;
+	CWinThread* m_pThread;
+
+	int *GetRgbRange(void);
+	void ColorSetting(void);
+	void cameraStart(void);
+	void cameraStop(void);
+	bool showContinuousImage(void);	
 };
+
+
+static UINT ThreadGrabContinuousCam(LPVOID pParam);

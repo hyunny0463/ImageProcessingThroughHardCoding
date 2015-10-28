@@ -62,6 +62,7 @@ void CImageProcessingThroughHardCodingDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SLD_GMAX, m_ctrlRGB[3]);
 	DDX_Control(pDX, IDC_SLD_BMIN, m_ctrlRGB[4]);
 	DDX_Control(pDX, IDC_SLD_BMAX, m_ctrlRGB[5]);
+	DDX_Text(pDX, IDC_STATIC_NOW_TIME, nowTimeDisplay);
 }
 
 BEGIN_MESSAGE_MAP(CImageProcessingThroughHardCodingDlg, CDialogEx)
@@ -97,6 +98,10 @@ BEGIN_MESSAGE_MAP(CImageProcessingThroughHardCodingDlg, CDialogEx)
 	ON_BN_CLICKED(Hcedgedetect, &CImageProcessingThroughHardCodingDlg::OnBnClickedHcedgedetect)
 	ON_BN_CLICKED(Cvcornerdet, &CImageProcessingThroughHardCodingDlg::OnBnClickedCvcornerdet)
 	ON_BN_CLICKED(homework, &CImageProcessingThroughHardCodingDlg::OnBnClickedhomework)
+	ON_WM_TIMER()
+	ON_WM_DESTROY()
+	ON_BN_CLICKED(IDC_BUTTON_AVI_LOAD, &CImageProcessingThroughHardCodingDlg::OnBnClickedButtonAviLoad)
+	ON_BN_CLICKED(IDC_BUTTON_OCV_CAMLOAD, &CImageProcessingThroughHardCodingDlg::OnBnClickedButtonOcvCamload)
 END_MESSAGE_MAP()
 
 
@@ -145,6 +150,8 @@ BOOL CImageProcessingThroughHardCodingDlg::OnInitDialog()
 	m_ctrlRGB[5].SetRange(-128, 127) ;
 
 	ColorSetting() ;
+
+	SetTimer(0, 1000, NULL);
 
 	return TRUE ;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
@@ -398,4 +405,185 @@ void CImageProcessingThroughHardCodingDlg::OnBnClickedhomework()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	Algorithm.Homework();
+}
+
+void CImageProcessingThroughHardCodingDlg::OnBnClickedButtonAviLoad()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	if (m_bAviLoadEnabled == FALSE)
+	{
+		SetTimer(1, 100, NULL);
+		m_capAviView = cvCreateFileCapture(".\\Movies\\1.avi");
+		m_bAviLoadEnabled = TRUE;
+	}
+	else
+	{
+		m_bAviLoadEnabled = FALSE;
+		KillTimer(1);
+	}
+}
+
+void CImageProcessingThroughHardCodingDlg::OnTimer(UINT_PTR nIDEvent)
+{
+	// TODO: 여기에 메시지 처리기 코드를 추가 및/또는 기본값을 호출합니다.
+
+	if (nIDEvent == 1)
+	{
+		cvGrabFrame(m_capAviView);
+		IplImage* pFrameAviView = cvQueryFrame(m_capAviView);
+
+		if (!pFrameAviView)
+		{
+			cvReleaseCapture(&m_capAviView);
+			KillTimer(1);
+		}
+		else
+		{
+			UpdateData(TRUE);
+
+			IplImage* pFrameFlipAviView = cvCreateImage(cvGetSize(pFrameAviView), IPL_DEPTH_8U, 3);
+			cvFlip(pFrameAviView, pFrameAviView);
+
+			// Dispaly at window
+			IplImage* pReOriginalImg = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3);
+			CvvImage cvProcess0Img;
+
+			cvResize(pFrameAviView, pReOriginalImg);
+			cvProcess0Img.CopyOf(pReOriginalImg, pReOriginalImg->nChannels / 3);
+			cvProcess0Img.Show(GetDlgItem(IDC_STATIC_ORIGINAL)->GetDC()->m_hDC, 0, 0, cvProcess0Img.Width(), cvProcess0Img.Height());
+			
+			cvResize(pFrameFlipAviView, pReOriginalImg);
+			cvProcess0Img.CopyOf(pReOriginalImg, pReOriginalImg->nChannels / 3);
+			cvProcess0Img.Show(GetDlgItem(IDC_STATIC_PROCESS1)->GetDC()->m_hDC, 0, 0, cvProcess0Img.Width(), cvProcess0Img.Height());
+			UpdateData(FALSE);
+
+			cvReleaseImage(&pFrameFlipAviView);
+			cvReleaseImage(&pReOriginalImg);
+		}
+	}
+
+	if (nIDEvent == 0)
+	{
+		UpdateData(TRUE);
+		saveNowTime = COleDateTime::GetTickCount();
+
+		nowTimeDisplay.Format(L"%d.%02d.%02d %02d:%02d:%02d", saveNowTime.GetYear(), saveNowTime.GetMonth(), saveNowTime.GetDay(), saveNowTime.GetHour(), saveNowTime.GetMinute(), saveNowTime.GetSecond());
+		UpdateData(FALSE);
+	}
+
+	CDialogEx::OnTimer(nIDEvent);
+}
+
+void CImageProcessingThroughHardCodingDlg::OnDestroy()
+{
+	CDialogEx::OnDestroy();
+
+	// TODO: 여기에 메시지 처리기 코드를 추가합니다.
+	cameraStop();
+
+	if (m_capCamView)
+	{
+		cvReleaseCapture(&m_capCamView);
+	}
+}
+
+void CImageProcessingThroughHardCodingDlg::OnBnClickedButtonOcvCamload()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	if (m_bCameraProcessFlag == FALSE)
+	{
+		cameraStart();
+		SetDlgItemText(IDC_BUTTON_OCV_CAMLOAD, L"CAM Stop");
+	}
+	else
+	{
+		cameraStop();
+		SetDlgItemText(IDC_BUTTON_OCV_CAMLOAD, L"CAM Load");
+	}
+}
+
+UINT ThreadGrabContinuousCam(LPVOID pParam)
+{
+	CImageProcessingThroughHardCodingDlg* image = ((CImageProcessingThroughHardCodingDlg*)pParam);
+	UINT Retval = image->showContinuousImage();
+	return Retval;
+}
+
+void CImageProcessingThroughHardCodingDlg::cameraStart(void)
+{
+	if (m_bCameraProcessFlag == FALSE)
+	{
+		m_bCameraProcessFlag = TRUE;
+
+		if (m_pThread != NULL) // Thread status 확인
+		{
+			AfxMessageBox(L"Thread is in use");
+		}
+
+		m_pThread = ::AfxBeginThread(ThreadGrabContinuousCam, this);
+
+		if (m_pThread == NULL)
+		{
+			AfxMessageBox(L"Thread Error");
+		}
+	}
+}
+
+void CImageProcessingThroughHardCodingDlg::cameraStop(void)
+{
+	if (m_bCameraProcessFlag == TRUE)
+	{
+		m_bCameraProcessFlag = FALSE;
+
+		if (m_pThread != NULL)
+		{
+			DWORD obj = WaitForSingleObject(m_pThread, INFINITE);
+			if (obj == WAIT_TIMEOUT)
+			{
+				TerminateThread(m_pThread, 0);
+			}
+			else if (obj == WAIT_OBJECT_0)
+			{
+				printf("Thread End");
+			}
+
+			m_pThread = NULL;
+		}
+	}
+}
+
+bool CImageProcessingThroughHardCodingDlg::showContinuousImage(void)
+{
+	m_capCamView = cvCreateCameraCapture(0);	// 0번 카메라 핸들을 받음
+
+	if (m_capCamView == (CvCapture*)0)
+	{
+		AfxMessageBox(L"Camera connection fail");
+		OnBnClickedButtonOcvCamload();
+		return FALSE;
+	}
+
+	else
+	{
+		m_bCameraConnectionFlag = TRUE;
+	}
+
+	IplImage* cameraImg;
+
+	while (m_bCameraProcessFlag)
+	{
+		cameraImg = cvRetrieveFrame(m_capCamView);
+
+		IplImage* pReOriginalImg = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3);
+		cvResize(cameraImg, pReOriginalImg);
+
+		CvvImage cvProcess0Img;
+		cvProcess0Img.CopyOf(pReOriginalImg, pReOriginalImg->nChannels / 3);
+		cvProcess0Img.Show(GetDlgItem(IDC_STATIC_ORIGINAL)->GetDC()->m_hDC, 0, 0, cvProcess0Img.Width(), cvProcess0Img.Height());
+		cvProcess0Img.Destroy();
+
+		cvReleaseImage(&pReOriginalImg);
+	}
+
+	return TRUE;
 }
