@@ -66,13 +66,13 @@ public:
 	CvCapture* m_capAviView;
 	CvCapture* m_capCamView;
 
-	bool m_bAviLoadEnabled;
-	bool m_bCameraProcessFlag;
-	bool m_bCameraConnectionFlag;
+	bool m_bAviLoadEnabled = FALSE;
+	bool m_bCameraProcessFlag = FALSE;
+	bool m_bCameraConnectionFlag = FALSE;
 
 	CString nowTimeDisplay;
 	COleDateTime saveNowTime;
-	CWinThread* m_pThread;
+	CWinThread* m_pThread = NULL;
 
 	int *GetRgbRange(void);
 	void ColorSetting(void);

@@ -442,19 +442,22 @@ void CImageProcessingThroughHardCodingDlg::OnTimer(UINT_PTR nIDEvent)
 			UpdateData(TRUE);
 
 			IplImage* pFrameFlipAviView = cvCreateImage(cvGetSize(pFrameAviView), IPL_DEPTH_8U, 3);
-			cvFlip(pFrameAviView, pFrameAviView);
+			cvFlip(pFrameAviView, pFrameFlipAviView);
 
 			// Dispaly at window
 			IplImage* pReOriginalImg = cvCreateImage(cvSize(320, 240), IPL_DEPTH_8U, 3);
 			CvvImage cvProcess0Img;
+			CvvImage cvProcess1Img;
 
 			cvResize(pFrameAviView, pReOriginalImg);
 			cvProcess0Img.CopyOf(pReOriginalImg, pReOriginalImg->nChannels / 3);
 			cvProcess0Img.Show(GetDlgItem(IDC_STATIC_ORIGINAL)->GetDC()->m_hDC, 0, 0, cvProcess0Img.Width(), cvProcess0Img.Height());
+			cvProcess0Img.Destroy();
 			
 			cvResize(pFrameFlipAviView, pReOriginalImg);
-			cvProcess0Img.CopyOf(pReOriginalImg, pReOriginalImg->nChannels / 3);
-			cvProcess0Img.Show(GetDlgItem(IDC_STATIC_PROCESS1)->GetDC()->m_hDC, 0, 0, cvProcess0Img.Width(), cvProcess0Img.Height());
+			cvProcess1Img.CopyOf(pReOriginalImg, pReOriginalImg->nChannels / 3);
+			cvProcess1Img.Show(GetDlgItem(IDC_STATIC_PROCESS1)->GetDC()->m_hDC, 0, 0, cvProcess1Img.Width(), cvProcess1Img.Height());
+			cvProcess1Img.Destroy();
 			UpdateData(FALSE);
 
 			cvReleaseImage(&pFrameFlipAviView);
